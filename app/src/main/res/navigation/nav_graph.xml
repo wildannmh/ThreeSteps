@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onboardingFragment">
+
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.example.projekpemmob.ui.onboarding.OnboardingFragment"
+        android:label="Onboarding">
+        <action
+            android:id="@+id/action_onboarding_to_signIn"
+            app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_onboarding_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.projekpemmob.ui.auth.SignInFragment"
+        android:label="Sign In">
+        <action
+            android:id="@+id/action_signIn_to_signUp"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signIn_to_forgot"
+            app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_signIn_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.projekpemmob.ui.auth.SignUpFragment"
+        android:label="Sign Up">
+        <action
+            android:id="@+id/action_signUp_to_home"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_signUp_to_signIn"
+            app:destination="@id/signInFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.projekpemmob.ui.auth.ForgotPasswordFragment"
+        android:label="Forgot Password" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.projekpemmob.ui.home.HomeFragment"
+        android:label="Home">
+        <action
+            android:id="@+id/action_home_to_details"
+            app:destination="@id/detailsFragment" />
+        <action
+            android:id="@+id/action_home_to_search"
+            app:destination="@id/searchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.projekpemmob.ui.details.DetailsFragment"
+        android:label="Details">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
+
+    <!-- Halaman Search -->
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.projekpemmob.ui.search.SearchFragment"
+        android:label="Search">
+        <argument
+            android:name="initialQuery"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_search_to_details"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+    <!-- Halaman Profile -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.projekpemmob.ui.profile.ProfileFragment"
+        android:label="Profile" >
+        <action
+            android:id="@+id/action_profile_to_editProfile"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.projekpemmob.ui.profile.EditProfileFragment"
+        android:label="Edit Profile">
+        <argument
+            android:name="name"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="phone"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="address"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <!-- Seller -->
+    <fragment
+        android:id="@+id/sellerDashboardFragment"
+        android:name="com.example.projekpemmob.ui.seller.SellerDashboardFragment"
+        android:label="Seller Dashboard">
+        <action
+            android:id="@+id/action_sellerDashboard_to_editProduct"
+            app:destination="@id/editProductFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProductFragment"
+        android:name="com.example.projekpemmob.ui.seller.EditProductFragment"
+        android:label="Produk">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_editProduct_to_sellerDashboard"
+            app:destination="@id/sellerDashboardFragment" />
+    </fragment>
+
+    <!--  Favorite  -->
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.projekpemmob.ui.favorite.FavoriteFragment"
+        android:label="Favorites">
+        <action
+            android:id="@+id/action_favorite_to_details"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+
+    <!--  Cart  -->
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.projekpemmob.ui.cart.CartFragment"
+        android:label="Cart" />
+
+    <!-- Activity -->
+    <fragment
+        android:id="@+id/activityFragment"
+        android:name="com.example.projekpemmob.ui.activity.ActivityFragment"
+        android:label="Activity" />
+</navigation>

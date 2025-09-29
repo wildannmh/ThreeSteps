@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        style="@style/Widget.Material3.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Edit Profile"
+        app:navigationIcon="@drawable/ic_back_24" />
+
+    <ScrollView
+        android:fillViewport="true"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:hint="Display name"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDisplayName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:hint="No. HP"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    android:inputType="phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:hint="Alamat"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAddress"
+                    android:inputType="textPostalAddress|textMultiLine"
+                    android:maxLines="4"
+                    android:minLines="3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:text="Simpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </FrameLayout>
+</LinearLayout>

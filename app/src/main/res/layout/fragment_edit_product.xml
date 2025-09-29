@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_back_24"
+            app:tint="?attr/colorOnBackground" />
+
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_shoe_blue" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPickImage"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:text="Pilih Gambar"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_marginTop="12dp"
+            android:hint="Nama Produk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_marginTop="12dp"
+            android:hint="Deskripsi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDesc"
+                android:minLines="3"
+                android:inputType="textMultiLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_marginTop="12dp"
+            android:hint="Harga Dasar (Default Price)"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBasePrice"
+                android:inputType="numberDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchActive"
+            android:text="Aktif"
+            android:checked="true"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Size & Stock per Region -->
+        <TextView
+            android:text="Size &amp; Stock per Region"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- EU -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchEU"
+            android:text="Aktifkan EU"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/sectionEU"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="Tambah size EU (contoh 38)"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEUSize"
+                        android:inputType="number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddEU"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:text="Tambah"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEU"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- US -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchUS"
+            android:text="Aktifkan US"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/sectionUS"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="Tambah size US (contoh 7 atau 9.5)"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUSSize"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddUS"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:text="Tambah"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvUS"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- UK -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchUK"
+            android:text="Aktifkan UK"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/sectionUK"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="Tambah size UK (contoh 6 atau 9)"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUKSize"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddUK"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:text="Tambah"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvUK"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:text="Simpan Produk &amp; Varian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:visibility="gone"
+                android:layout_gravity="end|center_vertical"
+                android:layout_width="24dp"
+                android:layout_height="24dp" />
+        </FrameLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- CONTENT -->
+    <LinearLayout
+        android:id="@+id/contentContainer"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/scrollViewProfile"
+            android:fillViewport="true"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Guest state -->
+                <LinearLayout
+                    android:id="@+id/groupGuest"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="48dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:src="@drawable/ic_user_24"
+                        app:tint="?attr/colorPrimary" />
+
+                    <TextView
+                        android:text="Anda sedang masuk sebagai Guest"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textStyle="bold"
+                        android:paddingTop="12dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:text="Login untuk mengelola profil, favorit, dan keranjang."
+                        android:alpha="0.7"
+                        android:paddingTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGoToSignIn"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:text="Sign In / Sign Up"
+                        android:layout_marginTop="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Logged-in state -->
+                <LinearLayout
+                    android:id="@+id/groupLogged"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Header email -->
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_user_24"
+                            app:tint="?attr/colorPrimary" />
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:text="Email"
+                                android:alpha="0.6"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tvEmail"
+                                android:textStyle="bold"
+                                android:textAppearance="?attr/textAppearanceBodyLarge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Read-only rows -->
+                    <LinearLayout
+                        android:id="@+id/viewNameRow"
+                        android:orientation="vertical"
+                        android:layout_marginTop="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView android:text="Display name" android:alpha="0.6" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvDisplayNameValue" android:text="-" android:textAppearance="?attr/textAppearanceTitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/viewPhoneRow"
+                        android:orientation="vertical"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView android:text="No. HP" android:alpha="0.6" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvPhoneValue" android:text="-" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/viewAddressRow"
+                        android:orientation="vertical"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView android:text="Alamat" android:alpha="0.6" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvAddressValue" android:text="-" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <!-- Edit rows -->
+                    <LinearLayout
+                        android:id="@+id/editNameRow"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_marginTop="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:hint="Display name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etDisplayName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/editPhoneRow"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:hint="No. HP"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etPhone"
+                                android:inputType="phone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/editAddressRow"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:hint="Alamat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAddress"
+                                android:inputType="textPostalAddress|textMultiLine"
+                                android:maxLines="3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <!-- Tombol Edit / Batal -->
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnStartEdit"
+                            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                            android:text="Edit Profil"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCancelEdit"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:text="Batal"
+                            android:visibility="gone"
+                            android:layout_marginStart="8dp"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveProfile"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:text="Simpan Profil"
+                        android:enabled="false"
+                        android:visibility="gone"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <View
+                        android:layout_marginTop="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#1F000000" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSellerDashboard"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:text="Seller Dashboard"
+                        android:visibility="gone"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogout"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:text="Logout"
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

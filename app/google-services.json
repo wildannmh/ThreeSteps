@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899408772499",
+    "project_id": "projekpemmob",
+    "storage_bucket": "projekpemmob.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899408772499:android:1de11ca7fed9eb67063c66",
+        "android_client_info": {
+          "package_name": "com.example.projekpemmob"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8mFzF5lo9Ut5rD-dN1839aWAZF_bTMOk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
