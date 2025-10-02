@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true"
+    app:cardCornerRadius="12dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Baris: OrderId + Status chip -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvOrderId"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:text="status"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_status_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Total -->
+        <TextView
+            android:id="@+id/tvTotal"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Daftar nama item (maks 2 nama + "+N lainnya") -->
+        <TextView
+            android:id="@+id/tvItems"
+            android:layout_marginTop="4dp"
+            android:alpha="0.9"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Meta: jumlah items + waktu -->
+        <TextView
+            android:id="@+id/tvMeta"
+            android:alpha="0.75"
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

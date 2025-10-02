@@ -2,7 +2,9 @@ package com.example.projekpemmob.ui.cart
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projekpemmob.R
 import com.example.projekpemmob.databinding.FragmentCartBinding
@@ -30,13 +32,29 @@ class CartFragment : Fragment(R.layout.fragment_cart) {
         adapter = CartAdapter(
             onMinus = { row -> updateQty(row, row.qty - 1) },
             onPlus = { row -> updateQty(row, row.qty + 1) },
-            onRemove = { row -> removeItem(row) }
+            onRemove = { row -> removeItem(row) },
+            onItemClick = { row ->
+                findNavController().navigate(
+                    R.id.detailsFragment,
+                    bundleOf("productId" to row.productId) // pastikan argumen di detailsFragment bernama productId
+                )
+            }
         )
+
         b.rvCart.layoutManager = LinearLayoutManager(requireContext())
         b.rvCart.adapter = adapter
 
         listenCart()
-        b.btnCheckout.setOnClickListener { Snackbar.make(b.root, "Checkout (demo)", Snackbar.LENGTH_SHORT).show() }
+
+        b.btnCheckout.setOnClickListener {
+            if (auth.currentUser == null) {
+                Snackbar.make(b.root, "Silakan login terlebih dahulu", Snackbar.LENGTH_LONG).show()
+            } else if (adapter.currentList.isEmpty()) {
+                Snackbar.make(b.root, "Keranjang kosong", Snackbar.LENGTH_SHORT).show()
+            } else {
+                findNavController().navigate(R.id.action_cart_to_checkout)
+            }
+        }
     }
 
     private fun listenCart() {
@@ -72,17 +90,32 @@ class CartFragment : Fragment(R.layout.fragment_cart) {
     private fun updateQty(row: CartRow, newQty: Int) {
         val user = auth.currentUser ?: return
         if (newQty <= 0) {
-            removeItem(row)
-            return
+            removeItem(row); return
         }
-        db.collection("users").document(user.uid).collection("cart").document(row.id)
-            .set(mapOf("qty" to newQty, "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()), SetOptions.merge())
+        val cartRef = db.collection("users").document(user.uid).collection("cart").document(row.id)
+        val varRef = db.collection("products").document(row.productId).collection("variants").document(row.variantId)
+        Firebase.firestore.runTransaction { tx ->
+            val varSnap = tx.get(varRef)
+            val stock = (varSnap.getLong("stock") ?: 0L).toInt()
+            if (newQty > stock) throw IllegalStateException("Stok tersedia hanya $stock")
+            tx.set(
+                cartRef,
+                mapOf(
+                    "qty" to newQty,
+                    "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+                ),
+                SetOptions.merge()
+            )
+        }
+            .addOnFailureListener { e ->
+                val msg = e.cause?.message ?: e.message ?: "Gagal memperbarui jumlah"
+                Snackbar.make(b.root, msg, Snackbar.LENGTH_LONG).show()
+            }
     }
 
     private fun removeItem(row: CartRow) {
         val user = auth.currentUser ?: return
-        db.collection("users").document(user.uid).collection("cart").document(row.id)
-            .delete()
+        db.collection("users").document(user.uid).collection("cart").document(row.id).delete()
     }
 
     override fun onDestroyView() {

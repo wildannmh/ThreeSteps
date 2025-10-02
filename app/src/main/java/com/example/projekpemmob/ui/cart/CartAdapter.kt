@@ -24,7 +24,8 @@ data class CartRow(
 class CartAdapter(
     private val onMinus: (CartRow) -> Unit,
     private val onPlus: (CartRow) -> Unit,
-    private val onRemove: (CartRow) -> Unit
+    private val onRemove: (CartRow) -> Unit,
+    private val onItemClick: (CartRow) -> Unit   // NEW: klik pada kartu
 ) : ListAdapter<CartRow, CartAdapter.VH>(DIFF) {
 
     companion object {
@@ -50,10 +51,13 @@ class CartAdapter(
             tvPrice.text = PriceFormatter.rupiah(row.price)
             tvQty.text = row.qty.toString()
 
-            // Gunakan 'row' (CartRow), jangan 'it' (View)
+            // Aksi tombol
             btnMinus.setOnClickListener { onMinus(row) }
             btnPlus.setOnClickListener { onPlus(row) }
             btnRemove.setOnClickListener { onRemove(row) }
+
+            // Klik area kartu (root)
+            root.setOnClickListener { onItemClick(row) }
         }
     }
 }

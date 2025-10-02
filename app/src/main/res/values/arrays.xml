@@ -5,4 +5,19 @@
         <item>US</item>
         <item>UK</item>
     </string-array>
+    <string-array name="brand_list">
+        <item>Nike</item>
+        <item>Ortuseight</item>
+        <item>Adiddas</item>
+        <item>New Balance</item>
+        <item>Converse</item>
+    </string-array>
+    <!-- Key untuk query: simpan di products.brandKey (lowercase, snake_case jika perlu) -->
+    <string-array name="brand_keys">
+        <item>nike</item>
+        <item>ortuseight</item>
+        <item>adiddas</item>
+        <item>new_balance</item>
+        <item>converse</item>
+    </string-array>
 </resources>

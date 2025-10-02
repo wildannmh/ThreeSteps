@@ -7,14 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.projekpemmob.NavGraphDirections
+import com.example.projekpemmob.R
 import com.example.projekpemmob.databinding.FragmentSearchBinding
 import com.example.projekpemmob.ui.search.adapter.SearchResultAdapter
 import com.example.projekpemmob.ui.search.adapter.SearchRowItem
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -26,6 +30,8 @@ class SearchFragment : Fragment() {
     private val args by navArgs<SearchFragmentArgs>()
     private lateinit var adapter: SearchResultAdapter
 
+    private var selectedBrandKey: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -34,13 +40,11 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = SearchResultAdapter(
             onClick = { item ->
-                // Kirim productId (String)
-                val action = SearchFragmentDirections.actionSearchToDetails(item.id)
+                val action = NavGraphDirections.actionGlobalDetails(productId = item.id)
                 findNavController().navigate(action)
             },
             onAdd = { item ->
                 Snackbar.make(view, "Added to cart: ${item.name}", Snackbar.LENGTH_SHORT).show()
-                // TODO: tambahkan logika simpan ke keranjang user bila diperlukan
             }
         )
         binding.rvResults.layoutManager = LinearLayoutManager(requireContext())
@@ -48,46 +52,91 @@ class SearchFragment : Fragment() {
 
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
-        // Tampilkan semua produk saat masuk
+        // Brand chips
+        setupBrandChips()
+
+        // Nilai awal
         binding.etSearch.setText(args.initialQuery)
         runSearch(args.initialQuery)
 
-        // Ikon search
-        binding.tilSearch.setStartIconOnClickListener {
-            runSearch(binding.etSearch.text?.toString().orEmpty())
-        }
-        // Tombol Search di keyboard
+        // Aksi search
+        binding.tilSearch.setStartIconOnClickListener { runSearch(binding.etSearch.text?.toString().orEmpty()) }
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 runSearch(binding.etSearch.text?.toString().orEmpty()); true
             } else false
         }
-        // Clear icon
-        binding.tilSearch.setEndIconOnClickListener {
-            binding.etSearch.setText("")
-            runSearch("")
-        }
-        // Live filter (opsional)
-        binding.etSearch.doAfterTextChanged { s ->
-            runSearch(s?.toString().orEmpty())
-        }
+        binding.tilSearch.setEndIconOnClickListener { binding.etSearch.setText(""); runSearch("") }
+        binding.etSearch.doAfterTextChanged { s -> runSearch(s?.toString().orEmpty()) }
 
         // Fokus input
         binding.etSearch.requestFocus()
         showKeyboard()
     }
 
+    private fun setupBrandChips() {
+        val names = resources.getStringArray(R.array.brand_list)
+        val keys = resources.getStringArray(R.array.brand_keys)
+        val group = binding.chipGroupBrand
+        group.removeAllViews()
+
+        group.addView(buildBrandChip("All", null, checked = (selectedBrandKey == null)))
+        for (i in names.indices) {
+            val label = names[i]
+            val key = keys.getOrNull(i) ?: slugify(label)
+            group.addView(buildBrandChip(label, key, checked = (selectedBrandKey == key)))
+        }
+        group.setOnCheckedStateChangeListener { cg, ids ->
+            val id = ids.firstOrNull()
+            val chip = cg.children.firstOrNull { it.id == id } as? Chip
+            selectedBrandKey = chip?.tag as? String
+            runSearch(binding.etSearch.text?.toString().orEmpty())
+        }
+    }
+
+    private fun buildBrandChip(label: String, key: String?, checked: Boolean): Chip {
+        return Chip(requireContext(), null, com.google.android.material.R.style.Widget_Material3_Chip_Filter_Elevated).apply {
+            id = View.generateViewId()
+            text = label
+            isCheckable = true
+            isClickable = true
+            isFocusable = true
+            isChecked = checked
+            tag = key
+            setOnClickListener { binding.chipGroupBrand.check(id) } // pastikan bisa ditekan
+        }
+    }
+
+    private fun slugify(s: String) = s.trim().lowercase().replace(Regex("\\s+"), "_")
+
+    // CASE-INSENSITIVE SEARCH: gunakan field 'nameLower' + query.lowercase()
     private fun runSearch(query: String) {
         val db = Firebase.firestore
         val col = db.collection("products")
+        val qText = query.trim()
+        val qLower = qText.lowercase()
+        val brand = selectedBrandKey
 
-        val task = if (query.isBlank()) {
-            // Semua produk terbaru
-            col.orderBy("createdAt", Query.Direction.DESCENDING).limit(50).get()
-        } else {
-            // Prefix search by name (case-sensitive di Firestore; simpan name dengan Title Case konsisten)
-            val q = query.trim()
-            col.orderBy("name").startAt(q).endAt(q + "\uf8ff").limit(50).get()
+        val task = when {
+            qLower.isBlank() && brand == null -> {
+                col.orderBy("createdAt", Query.Direction.DESCENDING).limit(50).get()
+            }
+            qLower.isBlank() && brand != null -> {
+                col.whereEqualTo("brandKey", brand)
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .limit(50).get()
+            }
+            qLower.isNotBlank() && brand == null -> {
+                col.orderBy("nameLower")
+                    .startAt(qLower).endAt(qLower + "\uf8ff")
+                    .limit(50).get()
+            }
+            else -> {
+                col.whereEqualTo("brandKey", brand)
+                    .orderBy("nameLower")
+                    .startAt(qLower).endAt(qLower + "\uf8ff")
+                    .limit(50).get()
+            }
         }
 
         task
@@ -102,10 +151,31 @@ class SearchFragment : Fragment() {
                 }
                 adapter.submitList(items)
                 binding.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
-                binding.tvEmpty.text = if (query.isBlank()) "Belum ada produk" else "Tidak ada hasil untuk \"$query\""
+                binding.tvEmpty.text = if (qLower.isBlank()) "Belum ada produk" else "Tidak ada hasil untuk \"$qText\""
             }
             .addOnFailureListener { e ->
-                Snackbar.make(binding.root, "Gagal memuat hasil: ${e.localizedMessage}", Snackbar.LENGTH_LONG).show()
+                // Fallback: equality brand + filter di memori (ignoreCase)
+                val base = if (brand != null) col.whereEqualTo("brandKey", brand) else col
+                base.limit(100).get()
+                    .addOnSuccessListener { qs ->
+                        val all = qs.documents.mapNotNull { d ->
+                            val name = d.getString("name").orEmpty()
+                            if (qLower.isBlank() || name.lowercase().startsWith(qLower)) {
+                                SearchRowItem(
+                                    id = d.id,
+                                    name = name,
+                                    price = d.getDouble("minPrice") ?: (d.getDouble("basePrice") ?: 0.0),
+                                    thumbnailUrl = d.getString("thumbnailUrl").orEmpty()
+                                )
+                            } else null
+                        }
+                        adapter.submitList(all)
+                        binding.tvEmpty.visibility = if (all.isEmpty()) View.VISIBLE else View.GONE
+                        Snackbar.make(binding.root, "Index pencarian belum ada. Menampilkan hasil sementara.", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Snackbar.make(binding.root, "Gagal memuat hasil: ${e.localizedMessage}", Snackbar.LENGTH_LONG).show()
+                    }
             }
     }
 
@@ -116,8 +186,5 @@ class SearchFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

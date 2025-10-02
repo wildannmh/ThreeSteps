@@ -11,7 +11,6 @@ import com.example.projekpemmob.R
 import com.example.projekpemmob.core.SessionManager
 import com.example.projekpemmob.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -25,8 +24,6 @@ class ProfileFragment : Fragment() {
     private var name: String = ""
     private var phone: String = ""
     private var address: String = ""
-
-    private var cartBadgeReg: ListenerRegistration? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
@@ -49,11 +46,13 @@ class ProfileFragment : Fragment() {
         binding.tvEmail.text = user.email ?: "(no email)"
         loadProfile()
 
-        // Tampilkan tombol Seller jika role == seller
+        // Tampilkan tombol Seller jika roles mengandung "seller" (fallback ke role lama)
         Firebase.firestore.collection("users").document(user.uid).get()
             .addOnSuccessListener { doc ->
-                val role = doc.getString("role") ?: "buyer"
-                binding.btnSellerDashboard.visibility = if (role == "seller") View.VISIBLE else View.GONE
+                val roles = (doc.get("roles") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
+                val legacyRole = doc.getString("role")
+                val isSeller = roles.contains("seller") || legacyRole == "seller"
+                binding.btnSellerDashboard.visibility = if (isSeller) View.VISIBLE else View.GONE
             }
             .addOnFailureListener {
                 binding.btnSellerDashboard.visibility = View.GONE
@@ -72,8 +71,7 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        // Tombol simpan/batal inline tidak dipakai
-        binding.btnCancelEdit?.visibility = View.GONE
+        // Tombol simpan inline tidak dipakai
         binding.btnSaveProfile?.visibility = View.GONE
 
         binding.btnLogout.setOnClickListener {
@@ -111,8 +109,6 @@ class ProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        cartBadgeReg?.remove()
-        cartBadgeReg = null
         _binding = null
     }
 }

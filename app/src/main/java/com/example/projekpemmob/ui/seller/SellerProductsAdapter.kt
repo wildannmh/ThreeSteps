@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.projekpemmob.R
 import com.example.projekpemmob.databinding.ItemSellerProductBinding
+import com.example.projekpemmob.util.PriceFormatter
 
 data class SellerProductItem(
     val id: String,
@@ -37,12 +38,11 @@ class SellerProductsAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
 
-        // Fallback gambar: jika URL kosong -> pakai drawable
         val model: Any = item.thumbnailUrl.takeIf { it.isNotBlank() } ?: R.drawable.ic_shoe_blue
         holder.b.ivThumb.load(model)
 
         holder.b.tvName.text = item.name
-        holder.b.tvPrice.text = "$" + String.format("%.2f", item.minPrice)
+        holder.b.tvPrice.text = PriceFormatter.rupiah(item.minPrice)
 
         holder.b.root.setOnClickListener { onClick(item.id) }
     }

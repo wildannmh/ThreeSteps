@@ -1,7 +1,7 @@
 <resources>
-    <dimen name="size_chip_diameter">44dp</dimen>
+    <dimen name="size_chip_diameter">50dp</dimen>
     <dimen name="size_chip_radius">22dp</dimen>
-    <dimen name="size_chip_spacing">6dp</dimen>
+    <dimen name="size_chip_spacing">3dp</dimen>
     <dimen name="size_chip_elev_selected">6dp</dimen>
     <dimen name="card_small_height">180dp</dimen>
 </resources>

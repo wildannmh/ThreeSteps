@@ -209,18 +209,8 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnStartEdit"
-                            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                            style="@style/Widget.Material3.Button.IconButton.Outlined"
                             android:text="Edit Profil"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCancelEdit"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:text="Batal"
-                            android:visibility="gone"
-                            android:layout_marginStart="8dp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />

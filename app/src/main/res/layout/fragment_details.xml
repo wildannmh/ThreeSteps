@@ -59,11 +59,11 @@
 
                 <View
                     android:id="@+id/badgeDot"
-                    android:layout_width="9dp"
-                    android:layout_height="9dp"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
                     android:layout_gravity="end|top"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="3dp"
                     android:background="@drawable/bg_badge_dot"
                     android:visibility="gone" />
             </FrameLayout>
@@ -77,19 +77,18 @@
             android:scaleType="centerCrop"
             android:layout_marginTop="8dp" />
 
-        <!-- Card info -->
         <com.google.android.material.card.MaterialCardView
             android:layout_marginTop="16dp"
-            app:cardCornerRadius="24dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceCornersTopLarge"
+            app:cardBackgroundColor="@color/white">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:padding="16dp"
+                android:padding="12dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/tvBest"
@@ -126,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <!-- Row judul Size + tabs region di kanan -->
+                <!-- Row Size + Region tabs -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -176,7 +175,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- List chip size horizontal -->
+                <!-- List chip size -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSizes"
                     android:layout_marginTop="10dp"
@@ -184,40 +183,43 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <!-- Bottom actions: dua ikon kecil kiri, Buy Now melebar kanan -->
+                <!-- Sisa stok -->
+                <TextView
+                    android:id="@+id/tvStock"
+                    android:text="Sisa stok: -"
+                    android:alpha="0.8"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- Tombol bawah -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="24dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <!-- Favorite icon button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFav"
-                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        style="@style/Widget.Material3.Button.IconButton.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:paddingHorizontal="12dp"
                         android:contentDescription="Favorite"
                         app:icon="@drawable/ic_heart_24"
                         app:iconTint="?attr/colorOnPrimaryContainer" />
 
-                    <!-- Add to cart icon button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCart"
-                        style="@style/Widget.Material3.Button.IconButton.Outlined"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
                         android:layout_marginStart="8dp"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:paddingHorizontal="20dp"
                         android:contentDescription="Add to cart"
-                        app:icon="@drawable/ic_cart_24" />
+                        app:icon="@drawable/ic_cart_add_24" />
 
-                    <!-- Spacer kecil -->
-                    <Space
-                        android:layout_width="12dp"
-                        android:layout_height="1dp" />
-
-                    <!-- Buy Now expands -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnBuy"
                         style="@style/Widget.Material3.Button.IconButton.Filled"

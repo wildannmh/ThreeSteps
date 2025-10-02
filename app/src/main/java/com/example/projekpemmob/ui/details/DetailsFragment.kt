@@ -13,17 +13,18 @@ import com.example.projekpemmob.R
 import com.example.projekpemmob.core.SessionManager
 import com.example.projekpemmob.core.requireLogin
 import com.example.projekpemmob.data.remote.FirestoreProducts
-import com.example.projekpemmob.data.repository.StockRepository
 import com.example.projekpemmob.databinding.FragmentDetailsBinding
 import com.example.projekpemmob.util.PriceFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
     private var _b: FragmentDetailsBinding? = null
@@ -61,6 +62,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             selected = chip
             applySelection(chip.variantId)
             renderBuyPrice()
+            renderStock() // update sisa stok dan enable/disable tombol
         }
         b.rvSizes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         b.rvSizes.adapter = sizeAdapter
@@ -95,7 +97,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun initFavoriteState() {
         favDocReg?.remove()
         val uid = auth.currentUser?.uid ?: run {
-            // Belum login -> default outline
             isFavorite = false
             syncFavoriteIcon()
             return
@@ -184,6 +185,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 selected = chips.first()
                 applySelection(selected!!.variantId)
                 renderBuyPrice()
+                renderStock()
+            } else {
+                b.tvStock.text = "Sisa stok: 0"
+                b.btnCart.isEnabled = false
             }
         }
     }
@@ -198,6 +203,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             selected = null
             sizeAdapter.submitList(chips)
             b.btnBuy.text = "Buy Now"
+            b.tvStock.text = "Sisa stok: -"
+            b.btnCart.isEnabled = false
         }
     }
 
@@ -218,47 +225,89 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         b.tvPrice.text = PriceFormatter.rupiah(price)
     }
 
+    private fun renderStock() {
+        val stock = selected?.stock ?: 0
+        b.tvStock.text = "Sisa stok: $stock"
+        b.btnCart.isEnabled = stock > 0
+        b.btnCart.alpha = if (stock > 0) 1f else 0.5f
+    }
+
     private fun addToCart() {
         val uid = auth.currentUser?.uid ?: return
         val sel = selected ?: run {
             Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT).show()
             return
         }
-        val item = hashMapOf(
-            "productId" to productId,
-            "variantId" to sel.variantId,
-            "name" to productName,
-            "thumbnailUrl" to productThumb,
-            "region" to currentRegion,
-            "size" to sel.size,
-            "price" to sel.price,
-            "qty" to 1,
-            "createdAt" to FieldValue.serverTimestamp(),
-            "updatedAt" to FieldValue.serverTimestamp()
-        )
-        db.collection("users").document(uid).collection("cart").document()
-            .set(item)
-            .addOnSuccessListener {
+
+        lifecycleScope.launch {
+            try {
+                addOrMergeCart(uid, sel, incrementBy = 1)
                 Snackbar.make(b.root, "Masuk keranjang", Snackbar.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Snackbar.make(b.root, e.message ?: "Gagal menambahkan ke keranjang", Snackbar.LENGTH_LONG).show()
             }
-            .addOnFailureListener {
-                Snackbar.make(b.root, it.localizedMessage ?: "Gagal menambahkan ke keranjang", Snackbar.LENGTH_LONG).show()
-            }
+        }
     }
 
+    // Buy Now: masukkan item ke cart (merge + cek stok) → ke Checkout
     private fun buyNow() {
+        val user = auth.currentUser ?: return
         val sel = selected ?: run {
             Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT).show()
             return
         }
         lifecycleScope.launch {
             try {
-                val orderId = StockRepository.placeOrderAndDecrement(productId, sel.variantId, qty = 1, priceEach = sel.price)
-                Snackbar.make(b.root, "Order $orderId dibuat", Snackbar.LENGTH_LONG).show()
+                addOrMergeCart(user.uid, sel, incrementBy = 1)
+                findNavController().navigate(R.id.action_details_to_checkout)
             } catch (e: Exception) {
-                Snackbar.make(b.root, e.message ?: "Gagal membuat order", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(b.root, e.message ?: "Gagal memproses Buy Now", Snackbar.LENGTH_LONG).show()
             }
         }
+    }
+
+    private suspend fun addOrMergeCart(uid: String, sel: SizeChip, incrementBy: Int) {
+        val cartCol = db.collection("users").document(uid).collection("cart")
+        val existing = cartCol
+            .whereEqualTo("productId", productId)
+            .whereEqualTo("variantId", sel.variantId)
+            .limit(1)
+            .get()
+            .await()
+
+        val docId = if (!existing.isEmpty) existing.documents.first().id else "${productId}_${sel.variantId}"
+        val cartRef = cartCol.document(docId)
+        val variantRef = db.collection("products").document(productId)
+            .collection("variants").document(sel.variantId)
+
+        db.runTransaction { tx ->
+            val varSnap = tx.get(variantRef)
+            if (!varSnap.exists()) throw IllegalStateException("Varian tidak ditemukan")
+            val stock = (varSnap.getLong("stock") ?: 0L).toInt()
+
+            val cartSnap = tx.get(cartRef)
+            val currentQty = (cartSnap.getLong("qty") ?: 0L).toInt()
+            val newQty = currentQty + incrementBy
+            if (newQty > stock) {
+                throw IllegalStateException("Stok tidak cukup. Maksimal $stock item di keranjang.")
+            }
+
+            val updates = mutableMapOf<String, Any>(
+                "productId" to productId,
+                "variantId" to sel.variantId,
+                "name" to productName,
+                "thumbnailUrl" to productThumb,
+                "region" to currentRegion,
+                "size" to sel.size,
+                "price" to sel.price,
+                "qty" to newQty,
+                "updatedAt" to FieldValue.serverTimestamp()
+            )
+            if (!cartSnap.exists()) {
+                updates["createdAt"] = FieldValue.serverTimestamp()
+            }
+            tx.set(cartRef, updates, SetOptions.merge())
+        }.await()
     }
 
     override fun onDestroyView() {

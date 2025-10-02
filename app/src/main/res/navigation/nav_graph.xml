@@ -4,6 +4,10 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/onboardingFragment">
 
+    <action
+        android:id="@+id/action_global_details"
+        app:destination="@id/detailsFragment" />
+
     <fragment
         android:id="@+id/onboardingFragment"
         android:name="com.example.projekpemmob.ui.onboarding.OnboardingFragment"
@@ -58,6 +62,20 @@
         <action
             android:id="@+id/action_home_to_search"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_home_to_bestSellers"
+            app:destination="@id/bestSellersFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bestSellersFragment"
+        android:name="com.example.projekpemmob.ui.catalog.BestSellersFragment"
+        android:label="Best Sellers">
+        <argument
+            android:name="brandKey"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -67,6 +85,9 @@
         <argument
             android:name="productId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_details_to_checkout"
+            app:destination="@id/checkoutFragment" />
     </fragment>
 
     <!-- Halaman Search -->
@@ -78,9 +99,6 @@
             android:name="initialQuery"
             app:argType="string"
             android:defaultValue="" />
-        <action
-            android:id="@+id/action_search_to_details"
-            app:destination="@id/detailsFragment" />
     </fragment>
 
     <!-- Halaman Profile -->
@@ -148,11 +166,39 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.projekpemmob.ui.cart.CartFragment"
-        android:label="Cart" />
+        android:label="Cart">
+        <action
+            android:id="@+id/action_cart_to_checkout"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
+
+    <!-- Checkout -->
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.projekpemmob.ui.checkout.CheckoutFragment"
+        android:label="Checkout">
+        <action
+            android:id="@+id/action_checkout_to_mockPayment"
+            app:destination="@id/mockPaymentFragment" />
+    </fragment>
+
+    <!--  MockPayment  -->
+    <fragment
+        android:id="@+id/mockPaymentFragment"
+        android:name="com.example.projekpemmob.ui.checkout.MockPaymentFragment"
+        android:label="Mock Payment">
+        <argument
+            android:name="orderId"
+            app:argType="string" />
+    </fragment>
 
     <!-- Activity -->
     <fragment
         android:id="@+id/activityFragment"
         android:name="com.example.projekpemmob.ui.activity.ActivityFragment"
-        android:label="Activity" />
+        android:label="Activity" >
+        <action
+            android:id="@+id/action_activityFragment_to_mockPaymentFragment"
+            app:destination="@id/mockPaymentFragment" />
+    </fragment>
 </navigation>

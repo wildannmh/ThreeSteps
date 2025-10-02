@@ -42,7 +42,6 @@ class SearchResultAdapter(
             tvName.text = item.name
             tvPrice.text = PriceFormatter.rupiah(item.price)
             root.setOnClickListener { onClick(item) }
-            btnAdd.setOnClickListener { onAdd(item) }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.projekpemmob.ui.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -10,11 +11,12 @@ import com.example.projekpemmob.R
 import com.example.projekpemmob.core.SessionManager
 import com.example.projekpemmob.core.requireLogin
 import com.example.projekpemmob.databinding.FragmentHomeBinding
+import com.example.projekpemmob.ui.common.HeaderConfig
 import com.example.projekpemmob.ui.common.HeaderViewModel
 import com.example.projekpemmob.ui.common.LeftAction
-import com.example.projekpemmob.ui.common.HeaderConfig
 import com.example.projekpemmob.ui.home.adapter.ProductCardItem
 import com.example.projekpemmob.ui.home.adapter.ProductCardNetAdapter
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
@@ -37,13 +39,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var favReg: ListenerRegistration? = null
     private val favoriteIds = mutableSetOf<String>()
 
+    // Brand filter key (slug), null = All
+    private var selectedBrandKey: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentHomeBinding.bind(view)
 
-        // Konfigurasi header global (kiri = favorites, judul = Home, cart terlihat)
         headerVM.set(HeaderConfig(title = "Home", leftAction = LeftAction.FAVORITES, showCart = true))
 
-        // Search
         val goToSearch = {
             val action = HomeFragmentDirections.actionHomeToSearch(initialQuery = "")
             findNavController().navigate(action)
@@ -51,13 +54,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.tilSearch.setStartIconOnClickListener { goToSearch() }
         binding.etSearch.setOnClickListener { goToSearch() }
 
-        // Popular
+        setupBrandChips()
+
+        // Best Sellers (adapter reuse)
         popularAdapter = ProductCardNetAdapter(
             onCardClick = { item -> findNavController().navigate(HomeFragmentDirections.actionHomeToDetails(productId = item.id)) },
             onFavToggle = { item -> toggleFavorite(item) }
         )
         binding.rvPopular.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvPopular.adapter = popularAdapter
+
+        // See all -> BestSellersFragment, bawa brand terpilih
+        binding.tvPopularSeeAll.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeToBestSellers(brandKey = selectedBrandKey)
+            findNavController().navigate(action)
+        }
 
         // New arrivals
         newAdapter = ProductCardNetAdapter(
@@ -68,9 +79,60 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.rvNew.adapter = newAdapter
 
         setupFavoritesListener()
-        loadPopular()
+        loadBestSellers()
         loadNewArrivals()
     }
+
+    private fun setupBrandChips() {
+        val names = resources.getStringArray(R.array.brand_list)
+        val keys = resources.getStringArray(R.array.brand_keys)
+        val group = binding.chipGroupBrand
+        group.removeAllViews()
+
+        // "All" chip
+        group.addView(buildBrandChip(label = "All", key = null, checked = (selectedBrandKey == null)))
+
+        // Brand chips
+        for (i in names.indices) {
+            val label = names[i]
+            val key = keys.getOrNull(i) ?: slugify(label)
+            group.addView(buildBrandChip(label = label, key = key, checked = (selectedBrandKey == key)))
+        }
+
+        group.setOnCheckedStateChangeListener { chipGroup, checkedIds ->
+            val checkedId = checkedIds.firstOrNull()
+            val chip = checkedId?.let { chipGroup.findViewById<com.google.android.material.chip.Chip>(it) }
+            selectedBrandKey = chip?.tag as? String // null untuk "All"
+            popularAdapter.submitList(emptyList())
+            newAdapter.submitList(emptyList())
+            loadBestSellers()
+            loadNewArrivals()
+        }
+    }
+
+    private fun buildBrandChip(label: String, key: String?, checked: Boolean): com.google.android.material.chip.Chip {
+        val chip = com.google.android.material.chip.Chip(requireContext(), null, com.google.android.material.R.style.Widget_Material3_Chip_Filter_Elevated).apply {
+            id = View.generateViewId()
+            text = label
+            isCheckable = true
+            isChecked = checked
+            tag = key
+            isClickable = true
+            isFocusable = true
+        }
+        key?.let {
+            val resName = "ic_brand_${it}"
+            val iconId = resources.getIdentifier(resName, "drawable", requireContext().packageName)
+            if (iconId != 0) {
+                chip.chipIcon = requireContext().getDrawable(iconId)
+                chip.isChipIconVisible = true
+            }
+        }
+        chip.setOnClickListener { binding.chipGroupBrand.check(chip.id) }
+        return chip
+    }
+
+    private fun slugify(s: String): String = s.trim().lowercase().replace(Regex("\\s+"), "_")
 
     private fun toggleFavorite(item: ProductCardItem) {
         val user = auth.currentUser ?: return requireLogin(session) {}
@@ -106,11 +168,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         newAdapter.submitList(newAdapter.currentList.map { it.copy(isFavorite = favoriteIds.contains(it.id)) })
     }
 
-    private fun loadPopular() {
-        db.collection("products")
-            .orderBy("minPrice", Query.Direction.ASCENDING)
+    // Best Sellers: urut berdasarkan salesCount desc, lalu createdAt desc (tanpa filter isBestSeller)
+    private fun loadBestSellers() {
+        val brand = selectedBrandKey
+        var q: Query = db.collection("products")
+        if (brand != null) q = q.whereEqualTo("brandKey", brand)
+        q = q
+            .orderBy("salesCount", Query.Direction.DESCENDING)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
             .limit(10)
-            .get()
+
+        q.get()
             .addOnSuccessListener { qs ->
                 val items = qs.documents.map { d ->
                     ProductCardItem(
@@ -123,13 +191,50 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
                 popularAdapter.submitList(items)
             }
+            .addOnFailureListener { e ->
+                // Fallback: equality (brandKey) saja + sort di memori (salesCount desc, createdAt desc)
+                val base = if (brand != null)
+                    db.collection("products").whereEqualTo("brandKey", brand)
+                else
+                    db.collection("products")
+
+                base.limit(50).get()
+                    .addOnSuccessListener { qs ->
+                        val items = qs.documents
+                            .map { d ->
+                                val sc = d.getLong("salesCount")
+                                    ?: d.getDouble("salesCount")?.toLong()
+                                    ?: 0L
+                                val created = d.getTimestamp("createdAt")?.toDate()?.time ?: 0L
+                                Triple(sc, created, d)
+                            }
+                            .sortedWith(compareByDescending<Triple<Long, Long, com.google.firebase.firestore.DocumentSnapshot>> { it.first }
+                                .thenByDescending { it.second })
+                            .map { (_, _, d) ->
+                                ProductCardItem(
+                                    id = d.id,
+                                    name = d.getString("name").orEmpty(),
+                                    minPrice = d.getDouble("minPrice") ?: (d.getDouble("basePrice") ?: 0.0),
+                                    thumbnailUrl = d.getString("thumbnailUrl").orEmpty(),
+                                    isFavorite = favoriteIds.contains(d.id)
+                                )
+                            }
+                            .take(10)
+                        popularAdapter.submitList(items)
+                    }
+                    .addOnFailureListener {
+                        Snackbar.make(binding.root, e.localizedMessage ?: "Gagal memuat Best Sellers", Snackbar.LENGTH_LONG).show()
+                    }
+            }
     }
 
     private fun loadNewArrivals() {
-        db.collection("products")
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .limit(10)
-            .get()
+        val brand = selectedBrandKey
+        var q: Query = db.collection("products")
+        if (brand != null) q = q.whereEqualTo("brandKey", brand)
+        q = q.orderBy("createdAt", Query.Direction.DESCENDING).limit(10)
+
+        q.get()
             .addOnSuccessListener { qs ->
                 val items = qs.documents.map { d ->
                     ProductCardItem(
@@ -141,6 +246,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
                 }
                 newAdapter.submitList(items)
+            }
+            .addOnFailureListener { e ->
+                val base = if (brand != null)
+                    db.collection("products").whereEqualTo("brandKey", brand)
+                else db.collection("products")
+                base.limit(50).get()
+                    .addOnSuccessListener { qs ->
+                        val items = qs.documents
+                            .map { d ->
+                                val createdAt = d.getTimestamp("createdAt")?.toDate()?.time ?: 0L
+                                ProductCardItem(
+                                    id = d.id,
+                                    name = d.getString("name").orEmpty(),
+                                    minPrice = d.getDouble("minPrice") ?: (d.getDouble("basePrice") ?: 0.0),
+                                    thumbnailUrl = d.getString("thumbnailUrl").orEmpty(),
+                                    isFavorite = favoriteIds.contains(d.id)
+                                ) to createdAt
+                            }
+                            .sortedByDescending { it.second }
+                            .map { it.first }
+                            .take(10)
+                        newAdapter.submitList(items)
+                        Snackbar.make(binding.root, "Index New Arrivals belum ada. Menampilkan hasil sementara.", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Snackbar.make(binding.root, e.localizedMessage ?: "Gagal memuat New Arrivals", Snackbar.LENGTH_LONG).show()
+                    }
             }
     }
 

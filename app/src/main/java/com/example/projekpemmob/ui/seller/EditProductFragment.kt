@@ -3,6 +3,7 @@ package com.example.projekpemmob.ui.seller
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -42,6 +43,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
     private lateinit var adapterUS: SizeStockAdapter
     private lateinit var adapterUK: SizeStockAdapter
 
+    private val brandOptions by lazy {
+        resources.getStringArray(R.array.brand_list).toList()
+    }
+
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             lifecycleScope.launch {
@@ -66,6 +71,11 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
         b.btnBack.setOnClickListener { findNavController().popBackStack() }
         b.btnPickImage.setOnClickListener { pickImage.launch("image/*") }
 
+        // Brand dropdown
+        b.actBrand.setAdapter(
+            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, brandOptions)
+        )
+
         // Setup adapters & RV
         adapterEU = SizeStockAdapter()
         adapterUS = SizeStockAdapter()
@@ -80,15 +90,9 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
         b.rvUK.adapter = adapterUK
 
         // Switch show/hide sections
-        b.switchEU.setOnCheckedChangeListener { _, checked ->
-            b.sectionEU.isVisible = checked
-        }
-        b.switchUS.setOnCheckedChangeListener { _, checked ->
-            b.sectionUS.isVisible = checked
-        }
-        b.switchUK.setOnCheckedChangeListener { _, checked ->
-            b.sectionUK.isVisible = checked
-        }
+        b.switchEU.setOnCheckedChangeListener { _, checked -> b.sectionEU.isVisible = checked }
+        b.switchUS.setOnCheckedChangeListener { _, checked -> b.sectionUS.isVisible = checked }
+        b.switchUK.setOnCheckedChangeListener { _, checked -> b.sectionUK.isVisible = checked }
 
         // Add size buttons
         b.btnAddEU.setOnClickListener {
@@ -110,7 +114,7 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
             b.etUKSize.text = null
         }
 
-        // Load product
+        // Load product (if editing)
         productId?.let { id ->
             db.collection("products").document(id).get()
                 .addOnSuccessListener { d ->
@@ -120,6 +124,10 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
                     b.switchActive.isChecked = d.getBoolean("active") ?: true
                     thumbnailUrl = d.getString("thumbnailUrl")
                     b.ivPreview.load(thumbnailUrl)
+
+                    // Prefill brand
+                    val brand = d.getString("brand").orEmpty()
+                    if (brand.isNotBlank()) b.actBrand.setText(brand, false)
                 }
 
             // Load existing variants -> prefill per region
@@ -158,28 +166,40 @@ class EditProductFragment : Fragment(R.layout.fragment_edit_product) {
         b.btnSave.setOnClickListener { saveProductAndVariants() }
     }
 
+    private fun brandSlug(s: String) = s.trim().lowercase().replace(Regex("\\s+"), "_")
+
     private fun saveProductAndVariants() {
         val name = b.etName.text?.toString()?.trim().orEmpty()
+        val brand = b.actBrand.text?.toString()?.trim().orEmpty()
         val desc = b.etDesc.text?.toString()?.trim().orEmpty()
         val basePrice = b.etBasePrice.text?.toString()?.toDoubleOrNull() ?: 0.0
+
         if (name.isBlank()) { toast("Nama wajib diisi"); return }
+        val allowed = resources.getStringArray(R.array.brand_list).toList()
+        if (brand.isBlank() || !allowed.contains(brand)) {
+            toast("Pilih merek dari daftar"); return
+        }
 
         setLoading(true)
 
         val productData = hashMapOf(
             "ownerId" to uid,
             "name" to name,
+            "nameLower" to name.lowercase(),
+            "brand" to brand,
+            "brandKey" to brandSlug(brand),
             "description" to desc,
             "basePrice" to basePrice,
             "minPrice" to basePrice,
             "thumbnailUrl" to (thumbnailUrl ?: ""),
             "active" to b.switchActive.isChecked,
-            "updatedAt" to FieldValue.serverTimestamp()
+            "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
 
         val ref = productId?.let { db.collection("products").document(it) }
             ?: db.collection("products").document().also {
-                productData["createdAt"] = FieldValue.serverTimestamp()
+                productData["createdAt"] = com.google.firebase.firestore.FieldValue.serverTimestamp()
+                productData["salesCount"] = 0L // default agar ikut urutan dengan benar
             }
 
         ref.set(productData, SetOptions.merge())
