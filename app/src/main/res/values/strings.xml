@@ -1,3 +1,51 @@
 <resources>
     <string name="app_name">ThreeSteps</string>
+
+    <!-- Login Screen Strings -->
+    <string name="welcome_title">Selamat Datang Kembali!</string>
+    <string name="welcome_subtitle">Silakan masuk untuk melanjutkan pengalaman berbelanja terbaik Anda.</string>
+    <string name="email_hint">Alamat Email</string>
+    <string name="password_hint">Kata Sandi</string>
+    <string name="forgot_password">Lupa Kata Sandi?</string>
+    <string name="sign_in_button">MASUK</string>
+    <string name="continue_guest">LANJUTKAN SEBAGAI TAMU</string>
+    <string name="no_account">Belum Punya Akun?</string>
+    <string name="create_account">Daftar Gratis</string>
+    <string name="or_divider">ATAU</string>
+
+
+    <string name="create_account_title">Buat Akun Baru</string>
+    <string name="create_account_subtitle">Mari buat akun bersama untuk pengalaman berbelanja terbaik!</string>
+    <string name="full_name_hint">Nama Lengkap</string>
+    <string name="sign_up_button">DAFTAR</string>
+    <string name="already_account">Sudah Punya Akun?</string>
+    <string name="sign_in_link">Masuk Sekarang</string>
+
+    <string name="back_button">Kembali</string>
+    <string name="lock_reset_description">Ikon Reset Kata Sandi</string>
+    <string name="recovery_title">Pulihkan Kata Sandi</string>
+    <string name="recovery_subtitle">Masukkan email Anda untuk menerima tautan reset kata sandi.</string>
+    <string name="send_link_button">KIRIM TAUTAN</string>
+    <string name="remember_password">Ingat kata sandi?</string>
+    <string name="back_to_login">Masuk Sekarang</string>
+
+    <string name="onboarding_title">Ready for the Spotlight?</string>
+    <string name="onboarding_subtitle">Discover the perfect style for every step of your journey with our exclusive collection.</string>
+    <string name="get_started_button">GET STARTED</string>
+
+
+    <string name="change_photo">Ubah Foto</string>
+    <string name="full_name">Nama Lengkap</string>
+    <string name="phone_number">Nomor Telepon</string>
+    <string name="address">Alamat</string>
+    <string name="position">Posisi</string>
+    <string name="student">Mahasiswa</string>
+    <string name="adjunct">Dosen</string>
+    <string name="save_changes">SIMPAN PERUBAHAN</string>
+
+    <!-- Content Descriptions -->
+    <string name="logo_description">Logo ThreeSteps</string>
+    <string name="email_icon_description">Ikon Email</string>
+    <string name="lock_icon_description">Ikon Kunci</string>
+    <string name="arrow_icon_description">Panah Kanan</string>
 </resources>

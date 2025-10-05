@@ -2,7 +2,6 @@ package com.example.projekpemmob.ui.checkout
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -26,7 +25,8 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
     private val auth by lazy { FirebaseAuth.getInstance() }
 
     private var subtotal = 0.0
-    private var shippingCost = 0.0
+    // Tetapkan ongkos kirim JNE REG secara statis
+    private var shippingCost = 15000.0 // Ongkir JNE REG, diambil dari mock default
     private var total = 0.0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,7 +34,8 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
 
         b.btnBack.setOnClickListener { findNavController().navigateUp() }
 
-        // Kurir sederhana (mock)
+        // HAPUS: Kode untuk dropdown kurir (actCourier) karena sudah dihapus dari XML
+        /*
         val couriers = listOf("JNE REG", "J&T EZ", "SiCepat REG")
         b.actCourier.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, couriers))
         b.actCourier.setOnItemClickListener { _, _, pos, _ ->
@@ -45,6 +46,11 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
             }
             renderSummary()
         }
+        */
+
+        // OPSIONAL: Tampilkan harga kurir statis di TextView baru (tvCourierPrice)
+        b.tvCourierPrice.text = PriceFormatter.rupiah(shippingCost)
+
 
         lifecycleScope.launch {
             loadCartAndSummary()
@@ -66,8 +72,10 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
             price * qty
         }
         subtotal = rows.sum()
-        // default kurir (JNE REG)
-        shippingCost = 15000.0
+
+        // shippingCost sudah didefinisikan di atas (15000.0) dan tidak perlu diubah lagi
+        // karena tidak ada pilihan kurir.
+
         renderSummary()
     }
 
@@ -86,7 +94,8 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
         val address = b.etAddress.text?.toString()?.trim().orEmpty()
         val city = b.etCity.text?.toString()?.trim().orEmpty()
         val postal = b.etPostal.text?.toString()?.trim().orEmpty()
-        val courier = b.actCourier.text?.toString()?.trim().orEmpty().ifBlank { "JNE REG" }
+        // Kurir ditetapkan statis, tidak lagi diambil dari actCourier
+        val courier = "JNE REG"
 
         if (receiver.isBlank() || phone.isBlank() || address.isBlank() || city.isBlank() || postal.isBlank()) {
             Snackbar.make(b.root, "Lengkapi alamat pengiriman", Snackbar.LENGTH_LONG).show()
@@ -128,7 +137,7 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
                 "addressLine" to address,
                 "city" to city,
                 "postalCode" to postal,
-                "courier" to courier
+                "courier" to courier // Menggunakan nilai statis "JNE REG"
             ),
             "expiresAt" to expiresAt,
             "createdAt" to FieldValue.serverTimestamp(),

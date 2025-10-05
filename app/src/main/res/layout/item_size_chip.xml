@@ -4,7 +4,8 @@
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/size_chip_spacing">
+    android:layout_marginHorizontal="@dimen/size_chip_spacing"
+    android:background="@color/white">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
@@ -13,7 +14,7 @@
         app:cardCornerRadius="@dimen/size_chip_radius"
         app:cardUseCompatPadding="true"
         app:strokeWidth="0dp"
-        app:cardBackgroundColor="@color/size_chip_bg_color">
+        app:cardBackgroundColor="@color/white">
 
         <TextView
             android:id="@+id/tvLabel"
@@ -22,6 +23,6 @@
             android:gravity="center"
             android:text="-"
             android:textStyle="bold"
-            android:textColor="@color/size_chip_text_color" />
+            android:textColor="@color/black" />
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

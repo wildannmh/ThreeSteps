@@ -82,14 +82,15 @@ class SignUpFragment : Fragment() {
                 }
         }
 
-        binding.btnGetStarted.setOnClickListener {
+        // PERBAIKAN: Ganti btnGetStarted menjadi tvSignIn
+        binding.tvSignIn.setOnClickListener {
             findNavController().navigate(SignUpFragmentDirections.actionSignUpToSignIn())
         }
     }
 
     private fun setLoading(loading: Boolean) {
         binding.btnSignUp.isEnabled = !loading
-        binding.btnSignUp.text = if (loading) "Creating..." else "Sign Up"
+        binding.btnSignUp.text = if (loading) "Mendaftarkan..." else "DAFTAR" // PERBAIKAN: Text sesuai layout baru
     }
 
     override fun onDestroyView() {

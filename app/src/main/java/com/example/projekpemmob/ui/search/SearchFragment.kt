@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -80,30 +81,59 @@ class SearchFragment : Fragment() {
         val group = binding.chipGroupBrand
         group.removeAllViews()
 
-        group.addView(buildBrandChip("All", null, checked = (selectedBrandKey == null)))
         for (i in names.indices) {
             val label = names[i]
             val key = keys.getOrNull(i) ?: slugify(label)
-            group.addView(buildBrandChip(label, key, checked = (selectedBrandKey == key)))
-        }
-        group.setOnCheckedStateChangeListener { cg, ids ->
-            val id = ids.firstOrNull()
-            val chip = cg.children.firstOrNull { it.id == id } as? Chip
-            selectedBrandKey = chip?.tag as? String
-            runSearch(binding.etSearch.text?.toString().orEmpty())
+            val checked = selectedBrandKey == key
+            val chip = buildBrandChip(label, key, checked)
+            chip.setOnClickListener {
+                selectedBrandKey = if (selectedBrandKey == key) null else key
+                // Rebuild all chips to update style and checked state
+                setupBrandChips()
+                runSearch(binding.etSearch.text?.toString().orEmpty())
+            }
+            group.addView(chip)
         }
     }
 
-    private fun buildBrandChip(label: String, key: String?, checked: Boolean): Chip {
+    private fun buildBrandChip(label: String, key: String, checked: Boolean): Chip {
         return Chip(requireContext(), null, com.google.android.material.R.style.Widget_Material3_Chip_Filter_Elevated).apply {
             id = View.generateViewId()
-            text = label
-            isCheckable = true
+            text = if (checked) label else null
+            isCheckable = false
             isClickable = true
             isFocusable = true
-            isChecked = checked
             tag = key
-            setOnClickListener { binding.chipGroupBrand.check(id) } // pastikan bisa ditekan
+            // Icon
+            val resName = "ic_brand_${key}"
+            val iconId = resources.getIdentifier(resName, "drawable", requireContext().packageName)
+            chipIcon = if (iconId != 0) requireContext().getDrawable(iconId) else null
+            isChipIconVisible = true
+            chipIconSize = 32.dpToPx()
+            // Style
+            if (checked) {
+                setChipBackgroundColorResource(android.R.color.white)
+                setChipStrokeColorResource(R.color.primary)
+                chipStrokeWidth = 2.dpToPx()
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.primary))
+                chipStartPadding = 24.dpToPx()
+                chipEndPadding = 24.dpToPx()
+                textStartPadding = 8.dpToPx()
+                textEndPadding = 8.dpToPx()
+                iconStartPadding = 4.dpToPx()
+                iconEndPadding = 4.dpToPx()
+            } else {
+                setChipBackgroundColorResource(android.R.color.white)
+                setChipStrokeColorResource(R.color.chip_stroke_selector)
+                chipStrokeWidth = 1.dpToPx()
+                setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                chipStartPadding = 24.dpToPx()
+                chipEndPadding = 24.dpToPx()
+                textStartPadding = 0f
+                textEndPadding = 0f
+                iconStartPadding = 0f
+                iconEndPadding = 0f
+            }
         }
     }
 
@@ -187,4 +217,5 @@ class SearchFragment : Fragment() {
     }
 
     override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    private fun Int.dpToPx(): Float = this * resources.displayMetrics.density
 }

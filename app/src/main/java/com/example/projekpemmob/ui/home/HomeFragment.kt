@@ -2,7 +2,8 @@ package com.example.projekpemmob.ui.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.children
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -16,7 +17,6 @@ import com.example.projekpemmob.ui.common.HeaderViewModel
 import com.example.projekpemmob.ui.common.LeftAction
 import com.example.projekpemmob.ui.home.adapter.ProductCardItem
 import com.example.projekpemmob.ui.home.adapter.ProductCardNetAdapter
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
@@ -87,48 +87,73 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val names = resources.getStringArray(R.array.brand_list)
         val keys = resources.getStringArray(R.array.brand_keys)
         val group = binding.chipGroupBrand
-        group.removeAllViews()
 
-        // "All" chip
-        group.addView(buildBrandChip(label = "All", key = null, checked = (selectedBrandKey == null)))
-
-        // Brand chips
-        for (i in names.indices) {
-            val label = names[i]
-            val key = keys.getOrNull(i) ?: slugify(label)
-            group.addView(buildBrandChip(label = label, key = key, checked = (selectedBrandKey == key)))
-        }
-
-        group.setOnCheckedStateChangeListener { chipGroup, checkedIds ->
-            val checkedId = checkedIds.firstOrNull()
-            val chip = checkedId?.let { chipGroup.findViewById<com.google.android.material.chip.Chip>(it) }
-            selectedBrandKey = chip?.tag as? String // null untuk "All"
-            popularAdapter.submitList(emptyList())
-            newAdapter.submitList(emptyList())
-            loadBestSellers()
-            loadNewArrivals()
-        }
-    }
-
-    private fun buildBrandChip(label: String, key: String?, checked: Boolean): com.google.android.material.chip.Chip {
-        val chip = com.google.android.material.chip.Chip(requireContext(), null, com.google.android.material.R.style.Widget_Material3_Chip_Filter_Elevated).apply {
-            id = View.generateViewId()
-            text = label
-            isCheckable = true
-            isChecked = checked
-            tag = key
-            isClickable = true
-            isFocusable = true
-        }
-        key?.let {
-            val resName = "ic_brand_${it}"
-            val iconId = resources.getIdentifier(resName, "drawable", requireContext().packageName)
-            if (iconId != 0) {
-                chip.chipIcon = requireContext().getDrawable(iconId)
-                chip.isChipIconVisible = true
+        fun rebuildChips(selectedKey: String?) {
+            group.removeAllViews()
+            for (i in names.indices) {
+                val label = names[i]
+                val key = keys.getOrNull(i) ?: slugify(label)
+                val checked = selectedKey == key
+                val chip = buildBrandChip(label, key, checked)
+                chip.setOnClickListener {
+                    val isChecked = (selectedBrandKey == key)
+                    selectedBrandKey = if (isChecked) null else key
+                    rebuildChips(selectedBrandKey)
+                    popularAdapter.submitList(emptyList())
+                    newAdapter.submitList(emptyList())
+                    loadBestSellers()
+                    loadNewArrivals()
+                }
+                group.addView(chip)
             }
         }
-        chip.setOnClickListener { binding.chipGroupBrand.check(chip.id) }
+        rebuildChips(selectedBrandKey)
+    }
+
+    private fun buildBrandChip(label: String, key: String, checked: Boolean): com.google.android.material.chip.Chip {
+        val chip = com.google.android.material.chip.Chip(requireContext(), null, com.google.android.material.R.style.Widget_Material3_Chip_Filter).apply {
+            id = View.generateViewId()
+            tag = key
+            isCheckable = false
+            isClickable = true
+            isFocusable = true
+            isCheckedIconVisible = false
+            chipMinHeight = 48.dpToPx()
+            layoutParams = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+        val resName = "ic_brand_${key}"
+        val iconId = chip.resources.getIdentifier(resName, "drawable", requireContext().packageName)
+        chip.chipIcon = if (iconId != 0) requireContext().getDrawable(iconId) else null
+        chip.isChipIconVisible = true
+        chip.chipIconSize = 32.dpToPx()
+
+        if (checked) {
+            chip.text = label
+            chip.setChipBackgroundColorResource(android.R.color.white) // Tetap putih
+            chip.setChipStrokeColorResource(R.color.primary)           // Stroke warna utama
+            chip.chipStrokeWidth = 2.dpToPx()                          // Atur ketebalan stroke
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary)) // Teks jadi warna utama
+            chip.chipStartPadding = 24.dpToPx()
+            chip.chipEndPadding = 24.dpToPx()
+            chip.textStartPadding = 8.dpToPx()
+            chip.textEndPadding = 8.dpToPx()
+            chip.iconStartPadding = 4.dpToPx()
+            chip.iconEndPadding = 4.dpToPx()
+        } else {
+            chip.text = null
+            chip.setChipBackgroundColorResource(android.R.color.white)
+            chip.setChipStrokeColorResource(R.color.chip_stroke_selector) // pakai warna grey/abu default
+            chip.chipStrokeWidth = 1.dpToPx()
+            chip.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            chip.chipIconSize = 32.dpToPx()
+            chip.chipIconTint = null
+            chip.chipStartPadding = 24.dpToPx()
+            chip.chipEndPadding = 24.dpToPx()
+            chip.textStartPadding = 0f
+            chip.textEndPadding = 0f
+            chip.iconStartPadding = 0f
+            chip.iconEndPadding = 0f
+        }
         return chip
     }
 
@@ -280,5 +305,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onDestroyView()
         favReg?.remove(); favReg = null
         _binding = null
+    }
+
+    private fun Int.dpToPx(): Float {
+        return this * resources.displayMetrics.density
     }
 }

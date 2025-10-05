@@ -1,114 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="24dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="16dp"
+    android:fillViewport="true"
+    android:background="@color/white">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:text="Create Account"
-            android:textStyle="bold"
-            android:textSize="24sp"
-            android:gravity="center"
+        <!-- 1. ILLUSTRATION/LOGO AREA - Sama seperti login -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"/>
-
-        <TextView
-            android:id="@+id/tvSubtitle"
-            android:text="Let's Create Account Together!"
-            android:textSize="14sp"
-            android:textColor="#888888"
+            android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginBottom="32dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_marginBottom="32dp">
 
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/logo"
+                android:contentDescription="@string/logo_description"
+                android:elevation="8dp"
+                android:background="@drawable/circle_background"/>
+
+            <!-- Efek dekoratif di bawah logo -->
+            <View
+                android:layout_width="80dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/primary"/>
+        </LinearLayout>
+
+        <!-- 2. HEADING - Style konsisten dengan login -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="40dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:text="Buat Akun Baru"
+                android:textStyle="bold"
+                android:textSize="32sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:text="Mari buat akun bersama untuk pengalaman berbelanja terbaik!"
+                android:textSize="15sp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingExtra="4dp"
+                android:gravity="center"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- 3. INPUT FIELDS - Style sama dengan login -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilFullName"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:hint="Full Name"
+            android:hint="Nama Lengkap"
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
+            app:startIconDrawable="@drawable/ic_person"
+            app:startIconTint="@color/primary"
+            android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFullName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:hint="Email Address"
+            android:hint="Alamat Email"
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
+            app:startIconDrawable="@drawable/ic_email"
+            app:startIconTint="@color/primary"
+            android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:hint="Password"
+            android:hint="Kata Sandi"
             app:boxCornerRadiusTopStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusBottomEnd="16dp"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="@color/primary"
             app:endIconMode="password_toggle"
+            app:endIconTint="@color/primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- 4. SIGN UP BUTTON - Style sama dengan login -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignUp"
-            style="@style/Widget.Material3.Button.IconButton.Filled"
-            android:text="Sign Up"
+            android:text="DAFTAR"
             android:textSize="16sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05"
+            app:cornerRadius="16dp"
+            android:backgroundTint="@color/primary"
+            android:elevation="4dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:padding="15dp"/>
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="40dp"/>
 
+        <!-- 5. SIGN IN LINK - Style sama dengan login -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="32dp">
+            android:orientation="vertical"
+            android:gravity="center">
 
-            <TextView
-                android:text="Already Have An Account?"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <!-- Pemisah dengan teks -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="24dp">
 
-            <TextView
-                android:id="@+id/btnGetStarted"
-                android:text=" Sign In"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/outline"/>
+
+                <TextView
+                    android:text="ATAU"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:paddingHorizontal="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/outline"/>
+            </LinearLayout>
+
+            <!-- Link sign in -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:text="Sudah Punya Akun?"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvSignIn"
+                    android:text=" Masuk Sekarang"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

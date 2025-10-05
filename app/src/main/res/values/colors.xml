@@ -1,7 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Warna existing - jangan dihapus -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light">#F8F9FA</color>
     <color name="gray">#9E9E9E</color>
+
+    <!-- UBAH Warna primary dari ungu ke biru navy -->
+    <color name="primary">#FF1E3A5F</color>
+    <color name="primary_dark">#FF0F2A4A</color>
+    <color name="primary_light">#FFE8EAF6</color>
+
+    <!-- Warna lainnya tetap sama -->
+    <color name="gray_50">#FFFAFAFA</color>
+    <color name="gray_100">#FFF5F5F5</color>
+    <color name="gray_200">#FFEEEEEE</color>
+    <color name="gray_300">#FFE0E0E0</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_500">#FF9E9E9E</color>
+    <color name="gray_600">#FF757575</color>
+    <color name="gray_700">#FF616161</color>
+    <color name="gray_800">#FF424242</color>
+    <color name="gray_900">#FF212121</color>
+
+    <color name="surface">#FFFFFBFE</color>
+    <color name="surface_variant">#FFF3EDF7</color>
+
+    <color name="success">#FF4CAF50</color>
+    <color name="error">#FFF44336</color>
+
+    <color name="text_primary">#FF1C1B1F</color>
+    <color name="text_secondary">#FF49454F</color>
+
+    <color name="outline">#FF79747E</color>
 </resources>

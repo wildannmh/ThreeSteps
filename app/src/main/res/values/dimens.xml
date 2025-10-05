@@ -3,5 +3,6 @@
     <dimen name="size_chip_radius">22dp</dimen>
     <dimen name="size_chip_spacing">3dp</dimen>
     <dimen name="size_chip_elev_selected">6dp</dimen>
+    <dimen name="chip_stroke_width">1dp</dimen>
     <dimen name="card_small_height">180dp</dimen>
 </resources>
