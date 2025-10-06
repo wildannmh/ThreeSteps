@@ -1,70 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/light">
 
-    <!-- Header lokal -->
     <LinearLayout
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_back_24"
-            android:contentDescription="Back" />
+        <!-- Header -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_24"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:text="Mock Payment"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:layout_marginStart="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray_200"
+            android:layout_marginVertical="12dp"/>
+
+        <!-- Order Info -->
+        <TextView
+            android:id="@+id/tvOrderId"
+            android:text="Order: -"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvReceiver"
+                    android:text="Penerima: -"
+                    android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_user_24"
+                    android:drawablePadding="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:text="Alamat: -"
+                    android:drawablePadding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="2dp"/>
+
+                <TextView
+                    android:id="@+id/tvCourier"
+                    android:text="Kurir: -"
+                    android:drawablePadding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Payment breakdown -->
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvSubtotal"
+                    android:text="Subtotal: -"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvShipping"
+                    android:text="Ongkir: -"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray_200"
+                    android:layout_marginVertical="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvTotal"
+                    android:text="Total: -"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:textSize="17sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Item list -->
+        <TextView
+            android:text="Daftar Barang:"
+            android:textStyle="bold"
+            android:layout_marginTop="14dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:id="@+id/layoutItems"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Countdown and button -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCountdown"
+                android:text="Sisa waktu: --:--"
+                android:textStyle="bold"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPayMock"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:text="Bayar (Mock)"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvTitle"
-            android:text="Mock Payment"
-            android:textStyle="bold"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvHint"
+            android:text="Simulasi pembayaran (dev). Tombol ini akan menandai order sebagai paid dan mengurangi stok."
+            android:alpha="0.7"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvOrderId"
-        android:text="Order: -"
-        android:layout_marginTop="12dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tvTotal"
-        android:text="Total: -"
-        android:textStyle="bold"
-        android:layout_marginTop="6dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tvCountdown"
-        android:text="Sisa waktu: --:--"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPayMock"
-        style="@style/Widget.Material3.Button.IconButton.Filled"
-        android:text="Bayar (Mock)"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tvHint"
-        android:text="Simulasi pembayaran (dev). Tombol ini akan menandai order sebagai paid dan mengurangi stok."
-        android:alpha="0.7"
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+</ScrollView>

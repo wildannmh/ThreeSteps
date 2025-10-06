@@ -32,7 +32,7 @@ class ActivityFragment : Fragment(R.layout.fragment_activity) {
                     val action = ActivityFragmentDirections.actionActivityFragmentToMockPaymentFragment(row.id)
                     findNavController().navigate(action)
                 } else {
-                    Snackbar.make(b.root, "Order ${row.id} • ${row.status}", Snackbar.LENGTH_SHORT).show()
+                    OrderDetailBottomSheet.newInstance(row.id).show(childFragmentManager, "order_detail")
                 }
             }
         )
@@ -50,38 +50,46 @@ class ActivityFragment : Fragment(R.layout.fragment_activity) {
             return
         }
         reg?.remove()
-        reg = db.collection("orders")
-            .whereEqualTo("userId", user.uid)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .addSnapshotListener { qs, e ->
-                if (e != null) {
-                    Snackbar.make(b.root, e.localizedMessage ?: "Gagal memuat aktivitas", Snackbar.LENGTH_LONG).show()
-                    return@addSnapshotListener
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { userDoc ->
+                val role = userDoc.getString("role") ?: "buyer"
+                val col = db.collection("orders")
+                val query = if (role == "seller" || role == "admin") {
+                    // Seller/admin: lihat semua order
+                    col.orderBy("createdAt", Query.Direction.DESCENDING).limit(100)
+                } else {
+                    // Buyer: hanya lihat order pribadi
+                    col.whereEqualTo("userId", user.uid)
+                        .orderBy("createdAt", Query.Direction.DESCENDING)
+                        .limit(100)
                 }
-                val rows = qs?.documents?.map { d ->
-                    // Ambil daftar nama dari items
-                    @Suppress("UNCHECKED_CAST")
-                    val items = (d.get("items") as? List<Map<String, Any?>>).orEmpty()
-                    val names = items.mapNotNull { it["name"] as? String }.filter { it.isNotBlank() }
-
-                    val itemsLabel = when {
-                        names.isEmpty() -> "-"
-                        names.size == 1 -> names[0]
-                        names.size == 2 -> "${names[0]}, ${names[1]}"
-                        else -> "${names[0]}, ${names[1]} +${names.size - 2} lainnya"
+                reg = query.addSnapshotListener { qs, e ->
+                    if (e != null) {
+                        Snackbar.make(b.root, e.localizedMessage ?: "Gagal memuat aktivitas", Snackbar.LENGTH_LONG).show()
+                        return@addSnapshotListener
                     }
-
-                    OrderRow(
-                        id = d.id,
-                        total = d.getDouble("total") ?: 0.0,
-                        status = d.getString("status") ?: "pending",
-                        itemsCount = items.size,
-                        createdAt = d.getTimestamp("createdAt")?.toDate(),
-                        itemsLabel = itemsLabel
-                    )
-                }.orEmpty()
-                b.tvEmpty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-                adapter.submitList(rows)
+                    val rows = qs?.documents?.map { d ->
+                        @Suppress("UNCHECKED_CAST")
+                        val items = (d.get("items") as? List<Map<String, Any?>>).orEmpty()
+                        val names = items.mapNotNull { it["name"] as? String }.filter { it.isNotBlank() }
+                        val itemsLabel = when {
+                            names.isEmpty() -> "-"
+                            names.size == 1 -> names[0]
+                            names.size == 2 -> "${names[0]}, ${names[1]}"
+                            else -> "${names[0]}, ${names[1]} +${names.size - 2} lainnya"
+                        }
+                        OrderRow(
+                            id = d.id,
+                            total = d.getDouble("total") ?: 0.0,
+                            status = d.getString("status") ?: "pending",
+                            itemsCount = items.size,
+                            createdAt = d.getTimestamp("createdAt")?.toDate(),
+                            itemsLabel = itemsLabel
+                        )
+                    }.orEmpty()
+                    b.tvEmpty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+                    adapter.submitList(rows)
+                }
             }
     }
 

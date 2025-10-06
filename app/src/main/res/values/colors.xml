@@ -10,7 +10,12 @@
     <color name="primary_dark">#FF0F2A4A</color>
     <color name="primary_light">#FFE8EAF6</color>
 
-    <!-- Warna lainnya tetap sama -->
+    <color name="green_600">#2E7D32</color>
+    <color name="amber_700">#F9A825</color>
+    <color name="red_700">#C62828</color>
+    <color name="brown_600">#6D4C41</color>
+    <color name="blue_grey_500">#607D8B</color>
+
     <color name="gray_50">#FFFAFAFA</color>
     <color name="gray_100">#FFF5F5F5</color>
     <color name="gray_200">#FFEEEEEE</color>

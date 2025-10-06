@@ -1,20 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:padding="12dp"
-    android:layout_width="match_parent" android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical">
 
     <ImageView
         android:id="@+id/ivThumb"
-        android:layout_width="56dp" android:layout_height="56dp"
-        android:scaleType="centerCrop" android:src="@drawable/ic_shoe_blue"/>
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_shoe_blue" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_marginStart="12dp"
-        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
-        <TextView android:id="@+id/tvName" android:textStyle="bold"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <TextView android:id="@+id/tvPrice" android:alpha="0.8"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:alpha="0.8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnDelete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_trash_24"
+        android:contentDescription="Hapus"
+        app:tint="@color/red_700" />
 </LinearLayout>

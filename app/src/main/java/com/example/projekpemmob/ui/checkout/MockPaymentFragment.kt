@@ -3,6 +3,7 @@ package com.example.projekpemmob.ui.checkout
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -52,10 +53,49 @@ class MockPaymentFragment : Fragment(R.layout.fragment_mock_payment) {
             return
         }
         val total = doc.getDouble("total") ?: 0.0
+        val subtotal = doc.getDouble("subtotal") ?: 0.0
+        val shippingCost = doc.getDouble("shippingCost") ?: 0.0
         val status = doc.getString("status") ?: "pending"
-        val expiresAt = doc.getTimestamp("expiresAt") // bisa null jika dibuat sebelum fitur ini
+        val expiresAt = doc.getTimestamp("expiresAt")
+        val shipping = doc.get("shipping") as? Map<*, *>
+        val items = doc.get("items") as? List<Map<String, Any?>>
+
+        // Tampilkan info pengiriman
+        if (shipping != null) {
+            val receiver = shipping["receiver"] as? String ?: "-"
+            val phone = shipping["phone"] as? String ?: "-"
+            val addressLine = shipping["addressLine"] as? String ?: "-"
+            val city = shipping["city"] as? String ?: "-"
+            val postal = shipping["postalCode"] as? String ?: "-"
+            val courier = shipping["courier"] as? String ?: "-"
+            b.tvReceiver.text = "Penerima: $receiver ($phone)"
+            b.tvAddress.text = "Alamat: $addressLine, $city, $postal"
+            b.tvCourier.text = "Kurir: $courier"
+        } else {
+            b.tvReceiver.text = "Penerima: -"
+            b.tvAddress.text = "Alamat: -"
+            b.tvCourier.text = "Kurir: -"
+        }
+
+        // Tampilkan subtotal, ongkir, total
+        b.tvSubtotal.text = "Subtotal: ${PriceFormatter.rupiah(subtotal)}"
+        b.tvShipping.text = "Ongkir: ${PriceFormatter.rupiah(shippingCost)}"
         b.tvTotal.text = "Total: ${PriceFormatter.rupiah(total)}"
 
+        // Tampilkan daftar item
+        b.layoutItems.removeAllViews()
+        items?.forEach { item ->
+            val name = item["name"] as? String ?: "-"
+            val size = item["size"] as? String ?: "-"
+            val region = item["region"] as? String ?: ""
+            val qty = (item["qty"] as? Number)?.toInt() ?: 1
+            val price = (item["price"] as? Number)?.toDouble() ?: 0.0
+            val itemView = TextView(requireContext())
+            itemView.text = "$name $region $size x$qty - ${PriceFormatter.rupiah(price * qty)}"
+            b.layoutItems.addView(itemView)
+        }
+
+        // Status dan tombol
         if (status == "paid") {
             b.btnPayMock.isEnabled = false
             b.tvHint.text = "Order sudah dibayar."
@@ -144,8 +184,15 @@ class MockPaymentFragment : Fragment(R.layout.fragment_mock_payment) {
                 @Suppress("UNCHECKED_CAST")
                 val items = order["items"] as? List<Map<String, Any?>> ?: emptyList()
 
-                // 1) Kurangi stok per varian
-                for (it in items) {
+                // 1. READ semua varian dahulu
+                data class ItemData(
+                    val varRef: DocumentReference,
+                    val productRef: DocumentReference,
+                    val qty: Int,
+                    val pricePerUnit: Double,
+                    val stock: Int
+                )
+                val allItemData = items.map { it ->
                     val productId = (it["productId"] as? String).orEmpty()
                     val variantId = (it["variantId"] as? String).orEmpty()
                     val qty = ((it["qty"] as? Number)?.toInt()) ?: 0
@@ -153,25 +200,28 @@ class MockPaymentFragment : Fragment(R.layout.fragment_mock_payment) {
 
                     val varRef = db.collection("products").document(productId)
                         .collection("variants").document(variantId)
+                    val productRef = db.collection("products").document(productId)
                     val varSnap = tx.get(varRef)
                     val stock = (varSnap.getLong("stock") ?: 0L).toInt()
                     if (stock < qty) throw IllegalStateException("Stok kurang untuk salah satu item")
-                    tx.update(varRef, "stock", stock - qty)
 
-                    // 2) Naikkan metrik produk (Best Sellers)
-                    val productRef: DocumentReference = db.collection("products").document(productId)
-                    // Pakai increment agar tahan race condition; lastSoldAt untuk tie-breaker
+                    ItemData(varRef, productRef, qty, pricePerUnit, stock)
+                }
+
+                // 2. WRITE setelah semua read
+                for (item in allItemData) {
+                    tx.update(item.varRef, "stock", item.stock - item.qty)
                     tx.update(
-                        productRef,
+                        item.productRef,
                         mapOf(
-                            "salesCount" to FieldValue.increment(qty.toLong()),
-                            "salesAmount" to FieldValue.increment((pricePerUnit * qty).toLong()), // opsional: jika mau rupiah bulat
+                            "salesCount" to FieldValue.increment(item.qty.toLong()),
+                            "salesAmount" to FieldValue.increment((item.pricePerUnit * item.qty).toLong()),
                             "lastSoldAt" to FieldValue.serverTimestamp()
                         )
                     )
                 }
 
-                // 3) Tandai order paid (mock)
+                // 3. Tandai order paid (mock)
                 tx.update(
                     orderRef,
                     mapOf(
@@ -195,5 +245,11 @@ class MockPaymentFragment : Fragment(R.layout.fragment_mock_payment) {
         } catch (e: Exception) {
             Snackbar.make(b.root, e.message ?: "Gagal memproses pembayaran", Snackbar.LENGTH_LONG).show()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        timer?.cancel()
+        _b = null
     }
 }

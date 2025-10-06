@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.projekpemmob.R
 import com.example.projekpemmob.databinding.FragmentCheckoutBinding
 import com.example.projekpemmob.util.PriceFormatter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -34,21 +35,6 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
 
         b.btnBack.setOnClickListener { findNavController().navigateUp() }
 
-        // HAPUS: Kode untuk dropdown kurir (actCourier) karena sudah dihapus dari XML
-        /*
-        val couriers = listOf("JNE REG", "J&T EZ", "SiCepat REG")
-        b.actCourier.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, couriers))
-        b.actCourier.setOnItemClickListener { _, _, pos, _ ->
-            shippingCost = when (pos) {
-                0 -> 15000.0
-                1 -> 18000.0
-                else -> 17000.0
-            }
-            renderSummary()
-        }
-        */
-
-        // OPSIONAL: Tampilkan harga kurir statis di TextView baru (tvCourierPrice)
         b.tvCourierPrice.text = PriceFormatter.rupiah(shippingCost)
 
 
@@ -57,7 +43,16 @@ class CheckoutFragment : Fragment(R.layout.fragment_checkout) {
         }
 
         b.btnCreateOrder.setOnClickListener {
-            lifecycleScope.launch { createOrderAndGo() }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Konfirmasi Pesanan")
+                .setIcon(R.drawable.ic_question_24)
+                .setMessage("Pastikan data pesanan dan alamat pengiriman sudah benar.\n\nPesanan yang sudah dibuat tidak dapat diubah.\n\nLanjutkan membuat pesanan?")
+                .setPositiveButton("Ya, Buat Pesanan") { dialog, _ ->
+                    dialog.dismiss()
+                    lifecycleScope.launch { createOrderAndGo() }
+                }
+                .setNegativeButton("Cek Lagi", null)
+                .show()
         }
     }
 

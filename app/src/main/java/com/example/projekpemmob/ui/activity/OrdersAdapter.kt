@@ -17,10 +17,10 @@ import java.util.Locale
 data class OrderRow(
     val id: String,
     val total: Double,
-    val status: String, // pending | awaiting_payment | paid | cancelled | expired | ...
+    val status: String,
     val itemsCount: Int,
     val createdAt: Date?,
-    val itemsLabel: String // contoh: "Nike Air Max, Converse Chuck 70 +1 lainnya"
+    val itemsLabel: String
 )
 
 class OrdersAdapter(
@@ -44,16 +44,13 @@ class OrdersAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val row = getItem(position)
         with(holder.b) {
-            // Tampilkan Order #XXXXXX (6 char terakhir)
             val shortId = if (row.id.length > 6) row.id.takeLast(6) else row.id
             tvOrderId.text = "Order #$shortId"
 
-            // Status chip berwarna
             tvStatus.text = row.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             tvStatus.backgroundTintList = ColorStateList.valueOf(statusColor(tvStatus.context, row.status))
             tvStatus.setTextColor(ContextCompat.getColor(tvStatus.context, android.R.color.white))
 
-            // Total, daftar item, dan metadata
             tvTotal.text = PriceFormatter.rupiah(row.total)
             tvItems.text = row.itemsLabel
 
@@ -68,11 +65,11 @@ class OrdersAdapter(
 
     private fun statusColor(ctx: android.content.Context, status: String): Int {
         return when (status.lowercase()) {
-            "paid" -> 0xFF2E7D32.toInt()        // green 600
-            "awaiting_payment", "pending" -> 0xFFF9A825.toInt() // amber 700
-            "cancelled" -> 0xFFC62828.toInt()   // red 700
-            "expired" -> 0xFF6D4C41.toInt()     // brown 600
-            else -> 0xFF607D8B.toInt()          // blue grey 500
+            "paid" -> ContextCompat.getColor(ctx, R.color.green_600)
+            "awaiting_payment", "pending" -> ContextCompat.getColor(ctx, R.color.amber_700)
+            "cancelled" -> ContextCompat.getColor(ctx, R.color.red_700)
+            "expired" -> ContextCompat.getColor(ctx, R.color.brown_600)
+            else -> ContextCompat.getColor(ctx, R.color.blue_grey_500)
         }
     }
 }
