@@ -7,9 +7,9 @@ Selamat datang di **Three Steps**! 👋 Ini adalah aplikasi e-commerce berbasis 
 
 ## Daftar Isi Readme
 1. Fitur Utama
-2. Tampilan Aplikasi
-3. Teknologi yang Digunakan
-4. Cara Instalasi
+2. Teknologi yang Digunakan
+3. Cara Instalasi
+4. Manual Book
 5. Anggota kelompok
 6. Lisensi
 
