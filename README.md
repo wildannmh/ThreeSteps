@@ -11,7 +11,6 @@ Selamat datang di **Three Steps**! 👋 Ini adalah aplikasi e-commerce berbasis 
 3. Cara Instalasi
 4. Manual Book
 5. Anggota kelompok
-6. Lisensi
 
 ## Fitur Utama 🎯
 
@@ -87,7 +86,3 @@ Proyek ini adalah hasil kerja keras dari **Kelompok 11 Kelas A**:
 | 1| **Revalina Fidiya Anugrah** | `H1D023011` | 🎨 UI/UX Designer |
 | 2| **Prima Dzaky Hibatulloh** | `H1D023040` | 💻 Programmer |
 | 3| **Wildan Munawwar Habib** | `H1D023045` | 💻 Programmer |
-
-## Lisensi 📜
-
-Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE).
