@@ -1,7 +1,7 @@
-# Three Steps - Aplikasi E-Commerce 🛍️
+# Three Steps - Aplikasi E-Commerce Sepatu 🛍️
 <img width="1024" height="1024" alt="logo" src="https://github.com/user-attachments/assets/a7a056e7-ce94-4ed9-b72e-a13c60e16229" />
 
-Selamat datang di **Three Steps**! 👋 Ini adalah aplikasi e-commerce berbasis Android yang dirancang untuk memberikan pengalaman jual beli yang mulus dan efisien. Proyek ini dibangun dengan cinta menggunakan Kotlin dan Android Jetpack, dengan fokus pada antarmuka yang bersih dan fungsionalitas yang solid baik untuk pembeli maupun penjual. ✨
+Selamat datang di **Three Steps**! 👋 Ini adalah aplikasi e-commerce berbasis Android yang dirancang untuk memberikan pengalaman jual beli yang nyaman dan efisien. Proyek ini dibangun dengan cinta menggunakan Kotlin dan Android Jetpack, dengan fokus pada antarmuka yang bersih dan fungsionalitas yang solid baik untuk pembeli maupun penjual. ✨
 
 <br>
 
