@@ -72,6 +72,9 @@ Ingin mencoba menjalankan proyek ini? Ikuti langkah-langkah berikut:
     - Tunggu hingga Gradle selesai melakukan sinkronisasi.
     - Jalankan aplikasi pada emulator atau perangkat fisik melalui Android Studio. Selamat mencoba! 🎉
 
+## Link Figma
+https://bit.ly/Figma_ThreeShoes
+
 ## Manual Book 🔍
 <img width="12128" height="14512" alt="Manual Book" src="https://github.com/user-attachments/assets/f33ef9b4-563c-4a1d-8613-b7f32d4154a8" />
 
