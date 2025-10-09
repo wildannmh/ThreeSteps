@@ -77,13 +77,14 @@ class ProfileFragment : Fragment() {
         binding.btnLogout.setOnClickListener {
             auth.signOut()
             session.clearGuest()
-            findNavController().navigate(
-                R.id.onboardingFragment,
-                null,
-                NavOptions.Builder()
-                    .setPopUpTo(R.id.profileFragment, true)
-                    .build()
-            )
+
+            val navGraphId = R.id.nav_graph
+
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(navGraphId, true)
+                .build()
+
+            findNavController().navigate(R.id.onboardingFragment, null, navOptions)
         }
     }
 
