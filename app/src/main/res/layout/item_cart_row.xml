@@ -1,83 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:paddingVertical="10dp"
-    android:paddingHorizontal="0dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="72dp"
-    android:background="?attr/selectableItemBackground"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="6dp"
     android:clickable="true"
-    android:focusable="true">
-
-    <ImageView
-        android:id="@+id/ivThumb"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:scaleType="centerCrop" />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginStart="10dp"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvName"
-            android:textStyle="bold"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/tvVariant"
-            android:alpha="0.7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/tvPrice"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+    android:focusable="true"
+    app:rippleColor="@color/gray_100"
+    android:layout_marginHorizontal="2dp"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnMinus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@null"
-            android:src="@drawable/ic_minus_24"
-            android:contentDescription="Minus"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/gray_50">
+            <ImageView
+                android:id="@+id/ivThumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvQty"
-            android:layout_width="52dp"
-            android:layout_height="32dp"
-            android:text="1"
-            android:textSize="18sp"
-            android:gravity="center"/>
 
-        <ImageButton
-            android:id="@+id/btnPlus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@null"
-            android:src="@drawable/ic_plus_24"
-            android:contentDescription="Plus"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnRemove"
-            android:layout_width="42dp"
-            android:layout_height="32dp"
-            android:background="@null"
-            android:src="@drawable/ic_trash_24"
-            android:contentDescription="Remove"/>
+            <TextView
+                android:id="@+id/tvName"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvVariant"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/gray_600"
+                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/rounded_background_gray"
+                android:paddingHorizontal="4dp"
+                android:layout_marginBottom="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp">
+
+                <ImageButton
+                    android:id="@+id/btnMinus"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_minus_24"
+                    app:tint="@color/text_primary"
+                    android:contentDescription="Minus"/>
+
+                <TextView
+                    android:id="@+id/tvQty"
+                    android:layout_width="36dp"
+                    android:layout_height="match_parent"
+                    android:text="1"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+
+                <ImageButton
+                    android:id="@+id/btnPlus"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_plus_24"
+                    app:tint="@color/text_primary"
+                    android:contentDescription="Plus"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnRemove"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_trash_24"
+                app:tint="@color/red_500"
+                android:contentDescription="Remove item"
+                android:padding="8dp"/> </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

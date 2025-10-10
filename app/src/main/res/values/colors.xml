@@ -10,6 +10,9 @@
     <color name="primary_dark">#FF0F2A4A</color>
     <color name="primary_light">#FFE8EAF6</color>
 
+    <!-- Tambahkan definisi warna red_500 di sini -->
+    <color name="red_500">#FFF44336</color>
+
     <color name="green_600">#2E7D32</color>
     <color name="amber_700">#F9A825</color>
     <color name="red_700">#C62828</color>
@@ -31,6 +34,7 @@
     <color name="surface_variant">#FFF3EDF7</color>
 
     <color name="success">#FF4CAF50</color>
+    <!-- Ganti error yang awalnya F44336 menjadi red_500 -->
     <color name="error">#FFF44336</color>
 
     <color name="text_primary">#FF1C1B1F</color>

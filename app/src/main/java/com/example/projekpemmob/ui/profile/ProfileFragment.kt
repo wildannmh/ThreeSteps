@@ -43,10 +43,11 @@ class ProfileFragment : Fragment() {
         binding.groupGuest.visibility = View.GONE
         binding.groupLogged.visibility = View.VISIBLE
 
+        // Tampilkan data di header
         binding.tvEmail.text = user.email ?: "(no email)"
-        loadProfile()
+        loadProfile() // Akan mengisi name dan tvDisplayNameValue
 
-        // Tampilkan tombol Seller jika roles mengandung "seller" (fallback ke role lama)
+        // Tampilkan tombol Seller jika roles mengandung "seller"
         Firebase.firestore.collection("users").document(user.uid).get()
             .addOnSuccessListener { doc ->
                 val roles = (doc.get("roles") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
@@ -62,6 +63,7 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.sellerDashboardFragment)
         }
 
+        // Item "Edit Profil" (Informasi Profil & Pengiriman)
         binding.btnStartEdit.setOnClickListener {
             val action = ProfileFragmentDirections.actionProfileToEditProfile(
                 name.ifBlank { "" },
@@ -71,8 +73,7 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        // Tombol simpan inline tidak dipakai
-        binding.btnSaveProfile?.visibility = View.GONE
+        // Item "Pengaturan Akun" (btnSettings) telah dihapus dari XML, jadi tidak ada listener di sini.
 
         binding.btnLogout.setOnClickListener {
             auth.signOut()
@@ -92,19 +93,16 @@ class ProfileFragment : Fragment() {
         val user = auth.currentUser ?: return
         // Dari FirebaseAuth
         name = user.displayName.orEmpty()
-        binding.tvDisplayNameValue.text = if (name.isBlank()) "-" else name
+        binding.tvDisplayNameValue.text = if (name.isBlank()) "Pengguna Baru" else name
 
-        // Dari Firestore
+        // Dari Firestore (ambil data untuk dikirim ke Edit Profile)
         Firebase.firestore.collection("users").document(user.uid).get()
             .addOnSuccessListener { doc ->
                 phone = doc.getString("phone")?.trim().orEmpty()
                 address = doc.getString("address")?.trim().orEmpty()
-                binding.tvPhoneValue.text = if (phone.isBlank()) "-" else phone
-                binding.tvAddressValue.text = if (address.isBlank()) "-" else address
             }
             .addOnFailureListener {
-                binding.tvPhoneValue.text = "-"
-                binding.tvAddressValue.text = "-"
+                // Handle kegagalan, biarkan phone dan address tetap kosong
             }
     }
 

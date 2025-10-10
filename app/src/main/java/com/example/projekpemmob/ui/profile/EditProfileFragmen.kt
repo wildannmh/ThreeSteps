@@ -33,6 +33,9 @@ class EditProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Tampilkan Email (dari FirebaseAuth, read-only)
+        binding.tvEmail.text = auth.currentUser?.email ?: "N/A"
+
         // Prefill
         binding.etDisplayName.setText(args.name)
         binding.etPhone.setText(args.phone)
@@ -40,6 +43,8 @@ class EditProfileFragment : Fragment() {
 
         // Toolbar back
         binding.topAppBar.setNavigationOnClickListener { findNavController().popBackStack() }
+
+        // Tombol Ubah Kata Sandi (btnChangePassword) telah dihapus dari XML, jadi tidak ada listener di sini.
 
         // Save
         binding.btnSave.setOnClickListener {

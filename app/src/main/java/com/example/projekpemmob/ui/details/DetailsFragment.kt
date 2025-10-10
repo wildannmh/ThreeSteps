@@ -2,7 +2,6 @@ package com.example.projekpemmob.ui.details
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -52,45 +51,47 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         _b = FragmentDetailsBinding.bind(view)
         productId = args.productId
 
-        // Header lokal
-        b.btnBack.setOnClickListener { findNavController().navigateUp() }
-        b.btnOpenCart.setOnClickListener { findNavController().navigate(R.id.cartFragment) }
+        b.topAppBar.setNavigationOnClickListener { findNavController().navigateUp() }
+        b.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_cart -> {
+                    findNavController().navigate(R.id.cartFragment)
+                    true
+                }
+                else -> false
+            }
+        }
         setupCartBadge()
 
-        // Size chips
         sizeAdapter = SizeChipAdapter { chip ->
             selected = chip
             applySelection(chip.variantId)
             renderBuyPrice()
-            renderStock() // update sisa stok dan enable/disable tombol
+            renderStock()
         }
         b.rvSizes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         b.rvSizes.adapter = sizeAdapter
 
-        // Region tabs
         b.tvEU.setOnClickListener { switchRegion("EU") }
         b.tvUS.setOnClickListener { switchRegion("US") }
         b.tvUK.setOnClickListener { switchRegion("UK") }
 
-        // Buttons
         b.btnFav.setOnClickListener { requireLogin(session) { toggleFavorite() } }
+
         b.btnCart.setOnClickListener { requireLogin(session) { addToCart() } }
+
         b.btnBuy.setOnClickListener { requireLogin(session) { buyNow() } }
 
-        // Load produk
         loadProduct()
-        // Sync ikon favorit realtime
         initFavoriteState()
     }
 
     private fun setupCartBadge() {
-        b.badgeDot.visibility = View.GONE
         val user = auth.currentUser ?: return
         cartBadgeReg?.remove()
         cartBadgeReg = db.collection("users").document(user.uid).collection("cart")
             .addSnapshotListener { qs, _ ->
                 val hasItems = (qs?.size() ?: 0) > 0
-                b.badgeDot.visibility = if (hasItems) View.VISIBLE else View.GONE
             }
     }
 
@@ -111,7 +112,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private fun syncFavoriteIcon() {
         val iconRes = if (isFavorite) R.drawable.ic_heart_filled_24 else R.drawable.ic_heart_24
-        b.btnFav.icon = AppCompatResources.getDrawable(requireContext(), iconRes)
+        b.btnFav.setIconResource(iconRes)
     }
 
     private fun toggleFavorite() {
@@ -144,16 +145,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             basePrice = p.basePrice
             minPrice = p.minPrice
 
-            // Set judul header = nama sepatu
-            b.tvHeaderTitle.text = productName.ifBlank { "Details" }
-
             b.ivHero.load(productThumb)
             b.tvName.text = productName
             b.tvBest.visibility = if (p.isBestSeller) View.VISIBLE else View.GONE
             b.tvPrice.text = PriceFormatter.rupiah(minPrice)
             b.tvDesc.text = p.description
 
-            // Cek varian per region
             val euDef = async { FirestoreProducts.getVariantsByRegion(productId, "EU") }
             val usDef = async { FirestoreProducts.getVariantsByRegion(productId, "US") }
             val ukDef = async { FirestoreProducts.getVariantsByRegion(productId, "UK") }
@@ -188,6 +185,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 renderStock()
             } else {
                 b.tvStock.text = "Sisa stok: 0"
+                b.btnBuy.isEnabled = false
                 b.btnCart.isEnabled = false
             }
         }
@@ -204,6 +202,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             sizeAdapter.submitList(chips)
             b.btnBuy.text = "Buy Now"
             b.tvStock.text = "Sisa stok: -"
+            b.btnBuy.isEnabled = false
             b.btnCart.isEnabled = false
         }
     }
@@ -228,28 +227,36 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun renderStock() {
         val stock = selected?.stock ?: 0
         b.tvStock.text = "Sisa stok: $stock"
+
+        b.btnBuy.isEnabled = stock > 0
         b.btnCart.isEnabled = stock > 0
-        b.btnCart.alpha = if (stock > 0) 1f else 0.5f
+
+        b.btnBuy.alpha = if (stock > 0) 1f else 0.5f
     }
 
     private fun addToCart() {
-        val uid = auth.currentUser?.uid ?: return
+        val user = auth.currentUser ?: return
         val sel = selected ?: run {
             Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT).show()
             return
         }
-
         lifecycleScope.launch {
             try {
-                addOrMergeCart(uid, sel, incrementBy = 1)
-                Snackbar.make(b.root, "Masuk keranjang", Snackbar.LENGTH_SHORT).show()
+                addOrMergeCart(user.uid, sel, incrementBy = 1)
+
+                val snackbar = Snackbar.make(b.root, "Item ditambahkan di keranjang", Snackbar.LENGTH_SHORT)
+
+                // MENGATUR ANCHOR VIEW KE PARENT DARI FLOATING FOOTER CARD
+                // Ini adalah trik terbaik untuk CoordinatorLayout agar Snackbar muncul di atas footer
+                snackbar.anchorView = b.btnBuy.rootView.parent as View
+                snackbar.show()
+
             } catch (e: Exception) {
                 Snackbar.make(b.root, e.message ?: "Gagal menambahkan ke keranjang", Snackbar.LENGTH_LONG).show()
             }
         }
     }
 
-    // Buy Now: masukkan item ke cart (merge + cek stok) → ke Checkout
     private fun buyNow() {
         val user = auth.currentUser ?: return
         val sel = selected ?: run {
