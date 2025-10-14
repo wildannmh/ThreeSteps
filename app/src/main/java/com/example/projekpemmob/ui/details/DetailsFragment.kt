@@ -2,6 +2,7 @@ package com.example.projekpemmob.ui.details
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -51,18 +52,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         _b = FragmentDetailsBinding.bind(view)
         productId = args.productId
 
-        b.topAppBar.setNavigationOnClickListener { findNavController().navigateUp() }
-        b.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_cart -> {
-                    findNavController().navigate(R.id.cartFragment)
-                    true
-                }
-                else -> false
-            }
-        }
+        // Header actions
+        b.btnBack.setOnClickListener { findNavController().navigateUp() }
+        b.btnOpenCart.setOnClickListener { findNavController().navigate(R.id.cartFragment) }
+
+        // Realtime cart badge
         setupCartBadge()
 
+        // Size chips
         sizeAdapter = SizeChipAdapter { chip ->
             selected = chip
             applySelection(chip.variantId)
@@ -72,26 +69,39 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         b.rvSizes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         b.rvSizes.adapter = sizeAdapter
 
+        // Region tabs
         b.tvEU.setOnClickListener { switchRegion("EU") }
         b.tvUS.setOnClickListener { switchRegion("US") }
         b.tvUK.setOnClickListener { switchRegion("UK") }
 
+        // Buttons
         b.btnFav.setOnClickListener { requireLogin(session) { toggleFavorite() } }
-
         b.btnCart.setOnClickListener { requireLogin(session) { addToCart() } }
-
         b.btnBuy.setOnClickListener { requireLogin(session) { buyNow() } }
 
+        b.footerBar.post {
+            val padBottom = b.footerBar.height
+            b.scrollContent.setPadding(
+                b.scrollContent.paddingLeft,
+                b.scrollContent.paddingTop,
+                b.scrollContent.paddingRight,
+                padBottom
+            )
+        }
+
+        // Load data
         loadProduct()
         initFavoriteState()
     }
 
     private fun setupCartBadge() {
+        b.badgeDot.visibility = View.GONE
         val user = auth.currentUser ?: return
         cartBadgeReg?.remove()
         cartBadgeReg = db.collection("users").document(user.uid).collection("cart")
             .addSnapshotListener { qs, _ ->
                 val hasItems = (qs?.size() ?: 0) > 0
+                b.badgeDot.visibility = if (hasItems) View.VISIBLE else View.GONE
             }
     }
 
@@ -112,7 +122,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private fun syncFavoriteIcon() {
         val iconRes = if (isFavorite) R.drawable.ic_heart_filled_24 else R.drawable.ic_heart_24
-        b.btnFav.setIconResource(iconRes)
+        b.btnFav.icon = AppCompatResources.getDrawable(requireContext(), iconRes)
     }
 
     private fun toggleFavorite() {
@@ -137,13 +147,18 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         lifecycleScope.launch {
             val p = FirestoreProducts.getProduct(productId)
             if (p == null) {
-                Snackbar.make(b.root, "Produk tidak ditemukan", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(b.root, "Produk tidak ditemukan", Snackbar.LENGTH_LONG)
+                    .setAnchorView(b.footerBar)
+                    .show()
                 return@launch
             }
             productName = p.name
             productThumb = p.thumbnailUrl
             basePrice = p.basePrice
             minPrice = p.minPrice
+
+            // Set header title dinamis
+            b.tvHeaderTitle.text = productName.ifBlank { "Details" }
 
             b.ivHero.load(productThumb)
             b.tvName.text = productName
@@ -185,8 +200,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 renderStock()
             } else {
                 b.tvStock.text = "Sisa stok: 0"
-                b.btnBuy.isEnabled = false
                 b.btnCart.isEnabled = false
+                b.btnBuy.isEnabled = false
             }
         }
     }
@@ -202,8 +217,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             sizeAdapter.submitList(chips)
             b.btnBuy.text = "Buy Now"
             b.tvStock.text = "Sisa stok: -"
-            b.btnBuy.isEnabled = false
             b.btnCart.isEnabled = false
+            b.btnBuy.isEnabled = false
         }
     }
 
@@ -227,32 +242,29 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun renderStock() {
         val stock = selected?.stock ?: 0
         b.tvStock.text = "Sisa stok: $stock"
-
         b.btnBuy.isEnabled = stock > 0
         b.btnCart.isEnabled = stock > 0
-
         b.btnBuy.alpha = if (stock > 0) 1f else 0.5f
     }
 
     private fun addToCart() {
-        val user = auth.currentUser ?: return
+        val uid = auth.currentUser?.uid ?: return
         val sel = selected ?: run {
-            Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT)
+                .setAnchorView(b.footerBar)
+                .show()
             return
         }
         lifecycleScope.launch {
             try {
-                addOrMergeCart(user.uid, sel, incrementBy = 1)
-
-                val snackbar = Snackbar.make(b.root, "Item ditambahkan di keranjang", Snackbar.LENGTH_SHORT)
-
-                // MENGATUR ANCHOR VIEW KE PARENT DARI FLOATING FOOTER CARD
-                // Ini adalah trik terbaik untuk CoordinatorLayout agar Snackbar muncul di atas footer
-                snackbar.anchorView = b.btnBuy.rootView.parent as View
-                snackbar.show()
-
+                addOrMergeCart(uid, sel, incrementBy = 1)
+                Snackbar.make(b.root, "Item ditambahkan ke keranjang", Snackbar.LENGTH_SHORT)
+                    .setAnchorView(b.footerBar)
+                    .show()
             } catch (e: Exception) {
-                Snackbar.make(b.root, e.message ?: "Gagal menambahkan ke keranjang", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(b.root, e.message ?: "Gagal menambahkan ke keranjang", Snackbar.LENGTH_LONG)
+                    .setAnchorView(b.footerBar)
+                    .show()
             }
         }
     }
@@ -260,7 +272,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun buyNow() {
         val user = auth.currentUser ?: return
         val sel = selected ?: run {
-            Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(b.root, "Pilih size dulu", Snackbar.LENGTH_SHORT)
+                .setAnchorView(b.footerBar)
+                .show()
             return
         }
         lifecycleScope.launch {
@@ -268,7 +282,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 addOrMergeCart(user.uid, sel, incrementBy = 1)
                 findNavController().navigate(R.id.action_details_to_checkout)
             } catch (e: Exception) {
-                Snackbar.make(b.root, e.message ?: "Gagal memproses Buy Now", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(b.root, e.message ?: "Gagal memproses Buy Now", Snackbar.LENGTH_LONG)
+                    .setAnchorView(b.footerBar)
+                    .show()
             }
         }
     }

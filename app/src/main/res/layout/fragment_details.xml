@@ -6,206 +6,275 @@
     android:background="@color/gray_50">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+        android:background="@color/white"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/header"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_back_24"
-            app:navigationIconTint="@color/black"
-            app:menu="@menu/menu_details_actions" />
+            android:layout_height="wrap_content"
+            android:background="@color/white">
 
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_24"
+                android:contentDescription="Back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvHeaderTitle"
+                android:text="Details"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintEnd_toStartOf="@id/cartContainer"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/cartContainer"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageButton
+                    android:id="@+id/btnOpenCart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cart"
+                    android:src="@drawable/ic_cart_24" />
+
+                <View
+                    android:id="@+id/badgeDot"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="end|top"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="3dp"
+                    android:background="@drawable/bg_badge_dot"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="120dp">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/ivHero"
+            <FrameLayout
+                android:id="@+id/heroCardContainer"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="centerCrop"
-                android:background="@color/white" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/white">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_marginTop="-24dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceCornersTopLarge"
-                app:cardBackgroundColor="@color/white"
-                app:cardElevation="8dp">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:paddingHorizontal="24dp"
-                    android:paddingTop="32dp"
-                    android:paddingBottom="24dp"
+                <ImageView
+                    android:id="@+id/ivHero"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    android:background="@color/white" />
 
-                    <TextView
-                        android:id="@+id/tvName"
-                        android:text="Converse Chuck Taylor All Star Renew Cotton High Top"
-                        android:textStyle="bold"
-                        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                        android:textColor="@color/text_primary"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvPrice"
-                        android:text="Rp1.500.000,00"
-                        android:textStyle="bold"
-                        android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="@color/primary"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvBest"
-                        android:text="BEST SELLER"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="@color/red_700"
-                        android:layout_marginTop="8dp"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-
-                    <TextView
-                        android:id="@+id/tvDesc"
-                        android:text="High-top, Cotton Shoe Made From Recycled Materials Renew Cotton Upper: 30% Recycled Polyester, 30% Recycled Cotton, And 40% Virgin Cotton..."
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColor="@color/gray_700"
-                        android:layout_marginTop="16dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/contentCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="276dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceCornersTopLarge"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardElevation="8dp">
 
                     <LinearLayout
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginBottom="12dp"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingTop="32dp"
+                        android:paddingBottom="24dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="Pilih Ukuran"
-                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:id="@+id/tvName"
+                            android:text="Converse Chuck Taylor All Star Renew Cotton High Top"
                             android:textStyle="bold"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/text_primary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tvPrice"
+                            android:text="Rp1.500.000,00"
+                            android:textStyle="bold"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textColor="@color/primary"
+                            android:layout_marginTop="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tvBest"
+                            android:text="BEST SELLER"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/red_700"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tvDesc"
+                            android:text="High-top, Cotton Shoe Made From Recycled Materials Renew Cotton Upper: 30% Recycled Polyester, 30% Recycled Cotton, And 40% Virgin Cotton..."
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/gray_700"
+                            android:layout_marginTop="16dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
 
                         <LinearLayout
-                            android:id="@+id/regionTabs"
                             android:orientation="horizontal"
-                            android:layout_width="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
                             <TextView
-                                android:id="@+id/tvEU"
-                                android:text="EU"
-                                android:paddingHorizontal="8dp"
+                                android:text="Pilih Ukuran"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
                                 android:textStyle="bold"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
                                 android:layout_height="wrap_content" />
 
-                            <TextView
-                                android:id="@+id/tvUS"
-                                android:text="US"
-                                android:paddingHorizontal="8dp"
-                                android:textStyle="bold"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
-                                android:alpha="0.6"
+                            <LinearLayout
+                                android:id="@+id/regionTabs"
+                                android:orientation="horizontal"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content">
 
-                            <TextView
-                                android:id="@+id/tvUK"
-                                android:text="UK"
-                                android:paddingHorizontal="8dp"
-                                android:textStyle="bold"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
-                                android:alpha="0.6"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/tvEU"
+                                    android:text="EU"
+                                    android:paddingHorizontal="8dp"
+                                    android:textStyle="bold"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:id="@+id/tvUS"
+                                    android:text="US"
+                                    android:paddingHorizontal="8dp"
+                                    android:textStyle="bold"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                                    android:alpha="0.6"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:id="@+id/tvUK"
+                                    android:text="UK"
+                                    android:paddingHorizontal="8dp"
+                                    android:textStyle="bold"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                                    android:alpha="0.6"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
                         </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvSizes"
+                            android:overScrollMode="never"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/tvStock"
+                            android:text="Sisa stok: 3"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="@color/gray_600"
+                            android:layout_marginTop="16dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvSizes"
-                        android:overScrollMode="never"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvStock"
-                        android:text="Sisa stok: 3"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="@color/gray_600"
-                        android:layout_marginTop="16dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- FOOTER FIXED -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/footerBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:cardElevation="16dp"
+        app:cardElevation="8dp"
         app:cardCornerRadius="0dp"
+        app:strokeWidth="0dp"
         app:cardBackgroundColor="@color/white">
 
         <LinearLayout
             android:orientation="horizontal"
-            android:paddingHorizontal="24dp"
+            android:paddingHorizontal="8dp"
             android:paddingVertical="16dp"
             android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Tombol 1: Favorite -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFav"
                 style="@style/Widget.Material3.Button.IconButton.Outlined"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
                 app:icon="@drawable/ic_heart_24"
+                app:iconSize="26dp"
                 app:iconTint="@color/red_700"
-                app:strokeColor="@color/gray_300"
-                app:cornerRadius="12dp"
+                app:strokeWidth="0dp"
                 android:contentDescription="Favorite" />
 
-            <!-- Tombol 2: Tambah ke Keranjang (Outlined) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCart"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:text="Add to Cart"
-                android:layout_marginStart="8dp"
-                android:layout_width="0dp"
+                android:layout_marginStart="2dp"
+                android:layout_width="wrap_content"
                 android:layout_weight="0.4"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:icon="@drawable/ic_cart_add_24"
@@ -218,22 +287,20 @@
                 android:backgroundTint="@color/white"
                 android:contentDescription="Add to cart" />
 
-            <!-- Tombol 3: Buy Now (Filled) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBuy"
                 style="@style/Widget.Material3.Button"
                 android:text="Buy Now"
                 android:layout_marginStart="8dp"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_weight="0.6"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:cornerRadius="12dp"
                 android:backgroundTint="@color/primary" />
-
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
